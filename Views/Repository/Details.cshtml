@@ -1,0 +1,138 @@
+@model Deployguard.Models.Repository
+
+@{
+    ViewData["Title"] = "Repository Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1>@Model.Name</h1>
+        <p class="text-muted">
+            Repository information
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+
+    <form asp-controller="Repository"
+          asp-action="RefreshMetadata"
+          asp-route-id="@Model.Id"
+          method="post"
+          class="d-inline">
+
+        @Html.AntiForgeryToken()
+
+        <button type="submit"
+                class="btn btn-primary btn-sm">
+            Refresh Metadata
+        </button>
+
+    </form>
+
+    <a asp-controller="Repository"
+       asp-action="Edit"
+       asp-route-id="@Model.Id"
+       class="btn btn-warning btn-sm">
+        Edit
+    </a>
+
+    <form asp-controller="Repository"
+          asp-action="Delete"
+          asp-route-id="@Model.Id"
+          method="post"
+          class="d-inline"
+          onsubmit="return confirm('Are you sure you want to delete this repository?');">
+
+        @Html.AntiForgeryToken()
+
+        <button type="submit"
+                class="btn btn-danger btn-sm">
+            Delete
+        </button>
+
+    </form>
+
+    <a asp-controller="Repository"
+       asp-action="Index"
+       class="btn btn-secondary btn-sm">
+        Back to Repositories
+    </a>
+
+</div>
+
+</div>
+
+<div class="card shadow-sm">
+
+    <div class="card-body">
+
+        <dl class="row">
+
+            <dt class="col-sm-3">Repository Name</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+
+            <dt class="col-sm-3">Repository URL</dt>
+            <dd class="col-sm-9">
+                <a href="@Model.RepoUrl"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    @Model.RepoUrl
+                </a>
+            </dd>
+
+            <dt class="col-sm-3">Provider</dt>
+            <dd class="col-sm-9">@Model.Provider</dd>
+
+            <dt class="col-sm-3">Owner</dt>
+            <dd class="col-sm-9">
+                @(string.IsNullOrEmpty(Model.Owner)
+                    ? "Pending"
+                    : Model.Owner)
+            </dd>
+
+            <dt class="col-sm-3">Repository</dt>
+            <dd class="col-sm-9">
+                @(string.IsNullOrEmpty(Model.RepoName)
+                    ? "Pending"
+                    : Model.RepoName)
+            </dd>
+
+            <dt class="col-sm-3">Default Branch</dt>
+            <dd class="col-sm-9">
+                @(string.IsNullOrEmpty(Model.DefaultBranch)
+                    ? "Pending"
+                    : Model.DefaultBranch)
+            </dd>
+
+            <dt class="col-sm-3">Language</dt>
+            <dd class="col-sm-9">
+                @(string.IsNullOrEmpty(Model.Language)
+                    ? "Pending"
+                    : Model.Language)
+            </dd>
+
+            <dt class="col-sm-3">Size</dt>
+            <dd class="col-sm-9">
+                @Model.SizeKb KB
+            </dd>
+
+            <dt class="col-sm-3">Added</dt>
+            <dd class="col-sm-9">
+                @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+            </dd>
+
+            <dt class="col-sm-3">Last Scanned</dt>
+            <dd class="col-sm-9">
+                @(Model.LastScannedAt.HasValue
+                    ? Model.LastScannedAt.Value
+                        .ToLocalTime()
+                        .ToString("dd MMM yyyy HH:mm")
+                    : "Never")
+            </dd>
+
+        </dl>
+
+    </div>
+
+</div>

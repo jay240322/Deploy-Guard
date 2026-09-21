@@ -1,0 +1,88 @@
+@{
+    ViewData["Title"] = "Add Repository";
+}
+
+<div class="row justify-content-center">
+
+    <div class="col-md-7">
+
+        <div class="card shadow-sm">
+
+            <div class="card-body p-4">
+
+                <h2 class="mb-2">Add Repository</h2>
+
+                <p class="text-muted mb-4">
+                    Add a Git repository to DeployGuard.
+                </p>
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">
+                        @ViewBag.Error
+                    </div>
+                }
+
+                <form asp-controller="Repository"
+                      asp-action="Create"
+                      method="post">
+
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+
+                        <label class="form-label">
+                            Repository Name
+                        </label>
+
+                        <input type="text"
+                               name="name"
+                               class="form-control"
+                               placeholder="e.g. DeployGuard"
+                               required />
+
+                    </div>
+
+                    <div class="mb-4">
+
+                        <label class="form-label">
+                            Repository URL
+                        </label>
+
+                        <input type="url"
+                               name="repoUrl"
+                               class="form-control"
+                               placeholder="https://github.com/username/repository"
+                               required />
+
+                        <div class="form-text">
+                            Supported providers: GitHub, GitLab,
+                            Bitbucket and Azure DevOps.
+                        </div>
+
+                    </div>
+
+                    <div class="d-flex gap-2">
+
+                        <button type="submit"
+                                class="btn btn-primary">
+                            Add Repository
+                        </button>
+
+                        <a asp-controller="Repository"
+                           asp-action="Index"
+                           class="btn btn-secondary">
+                            Cancel
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

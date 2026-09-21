@@ -1,0 +1,111 @@
+@model IEnumerable<Deployguard.Models.Repository>
+
+@{
+    ViewData["Title"] = "Repositories";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+
+    <div>
+        <h1>Repositories</h1>
+        <p class="text-muted mb-0">
+            Manage your Git repositories.
+        </p>
+    </div>
+
+    <a asp-controller="Repository"
+       asp-action="Create"
+       class="btn btn-primary">
+        + Add Repository
+    </a>
+
+</div>
+
+@if (!Model.Any())
+{
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+
+            <h4>No repositories yet</h4>
+
+            <p class="text-muted">
+                Add your first Git repository to start using DeployGuard.
+            </p>
+
+            <a asp-controller="Repository"
+               asp-action="Create"
+               class="btn btn-primary">
+                Add Repository
+            </a>
+
+        </div>
+    </div>
+}
+else
+{
+    <div class="row">
+
+        @foreach (var repository in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+
+                <div class="card shadow-sm h-100">
+
+                    <div class="card-body">
+
+                        <h5 class="card-title">
+                            @repository.Name
+                        </h5>
+
+                        <p class="text-muted small">
+                            @repository.RepoUrl
+                        </p>
+
+                        <hr />
+
+                        <p class="mb-1">
+                            <strong>Provider:</strong>
+                            @repository.Provider
+                        </p>
+
+                        <p class="mb-1">
+                            <strong>Owner:</strong>
+                            @(string.IsNullOrEmpty(repository.Owner)
+                                ? "Pending"
+                                : repository.Owner)
+                        </p>
+
+                        <p class="mb-1">
+                            <strong>Branch:</strong>
+                            @(string.IsNullOrEmpty(repository.DefaultBranch)
+                                ? "Pending"
+                                : repository.DefaultBranch)
+                        </p>
+
+                        <p class="mb-3">
+                            <strong>Language:</strong>
+                            @(string.IsNullOrEmpty(repository.Language)
+                                ? "Pending"
+                                : repository.Language)
+                        </p>
+
+                        <a asp-controller="Repository"
+                           asp-action="Details"
+                           asp-route-id="@repository.Id"
+                           class="btn btn-outline-primary btn-sm">
+                            View Details
+                        </a>
+
+                    </div>
+
+                    <div class="card-footer text-muted small">
+                        Added @repository.CreatedAt.ToLocalTime().ToString("dd MMM yyyy")
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+}
