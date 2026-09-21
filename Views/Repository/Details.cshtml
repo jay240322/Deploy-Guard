@@ -5,72 +5,62 @@
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-
     <div>
         <h1>@Model.Name</h1>
-        <p class="text-muted">
+        <p class="text-muted mb-0">
             Repository information
         </p>
     </div>
 
     <div class="d-flex gap-2">
 
-    <form asp-controller="Repository"
-          asp-action="RefreshMetadata"
-          asp-route-id="@Model.Id"
-          method="post"
-          class="d-inline">
+        <form asp-controller="Repository"
+              asp-action="RefreshMetadata"
+              asp-route-id="@Model.Id"
+              method="post"
+              class="d-inline">
 
-        @Html.AntiForgeryToken()
+            @Html.AntiForgeryToken()
 
-        <button type="submit"
-                class="btn btn-primary btn-sm">
-            Refresh Metadata
-        </button>
+            <button type="submit"
+                    class="btn btn-primary btn-sm">
+                Refresh Metadata
+            </button>
 
-    </form>
+        </form>
 
-    <a asp-controller="Repository"
-       asp-action="Edit"
-       asp-route-id="@Model.Id"
-       class="btn btn-warning btn-sm">
-        Edit
-    </a>
+        <a asp-controller="Repository"
+           asp-action="Edit"
+           asp-route-id="@Model.Id"
+           class="btn btn-warning btn-sm">
+            Edit
+        </a>
 
-    <form asp-controller="Repository"
-          asp-action="Delete"
-          asp-route-id="@Model.Id"
-          method="post"
-          class="d-inline"
-          onsubmit="return confirm('Are you sure you want to delete this repository?');">
-
-        @Html.AntiForgeryToken()
-
-        <button type="submit"
-                class="btn btn-danger btn-sm">
+        <button type="button"
+                class="btn btn-danger btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteRepositoryModal">
             Delete
         </button>
 
-    </form>
+        <a asp-controller="Repository"
+           asp-action="Index"
+           class="btn btn-secondary btn-sm">
+            Back to Repositories
+        </a>
 
-    <a asp-controller="Repository"
-       asp-action="Index"
-       class="btn btn-secondary btn-sm">
-        Back to Repositories
-    </a>
-
-</div>
-
+    </div>
 </div>
 
 <div class="card shadow-sm">
-
     <div class="card-body">
 
         <dl class="row">
 
             <dt class="col-sm-3">Repository Name</dt>
-            <dd class="col-sm-9">@Model.Name</dd>
+            <dd class="col-sm-9">
+                @Model.Name
+            </dd>
 
             <dt class="col-sm-3">Repository URL</dt>
             <dd class="col-sm-9">
@@ -82,7 +72,9 @@
             </dd>
 
             <dt class="col-sm-3">Provider</dt>
-            <dd class="col-sm-9">@Model.Provider</dd>
+            <dd class="col-sm-9">
+                @Model.Provider
+            </dd>
 
             <dt class="col-sm-3">Owner</dt>
             <dd class="col-sm-9">
@@ -119,7 +111,9 @@
 
             <dt class="col-sm-3">Added</dt>
             <dd class="col-sm-9">
-                @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                @Model.CreatedAt
+                    .ToLocalTime()
+                    .ToString("dd MMM yyyy HH:mm")
             </dd>
 
             <dt class="col-sm-3">Last Scanned</dt>
@@ -132,6 +126,77 @@
             </dd>
 
         </dl>
+
+    </div>
+</div>
+
+
+<!-- Delete Confirmation Modal -->
+
+<div class="modal fade"
+     id="deleteRepositoryModal"
+     tabindex="-1"
+     aria-labelledby="deleteRepositoryModalLabel"
+     aria-hidden="true">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title"
+                    id="deleteRepositoryModalLabel">
+                    Delete Repository
+                </h5>
+
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+
+            </div>
+
+            <div class="modal-body">
+
+                <p class="mb-2">
+                    Are you sure you want to delete
+                    <strong>@Model.Name</strong>?
+                </p>
+
+                <p class="text-muted mb-0">
+                    This action cannot be undone.
+                </p>
+
+            </div>
+
+            <div class="modal-footer">
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+                <form asp-controller="Repository"
+                      asp-action="Delete"
+                      asp-route-id="@Model.Id"
+                      method="post"
+                      class="d-inline">
+
+                    @Html.AntiForgeryToken()
+
+                    <button type="submit"
+                            class="btn btn-danger">
+                        Delete Repository
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
 
     </div>
 
