@@ -1,4 +1,6 @@
 using Deployguard.Data;
+using Deployguard.Services;
+using Deployguard.Services.Providers;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpClient();
+
+// Authentication
 builder.Services.AddAuthentication(
         CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -16,13 +21,23 @@ builder.Services.AddAuthentication(
         options.SlidingExpiration = true;
     });
 
+// Database
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
+// Repository services
+builder.Services.AddScoped<RepositoryUrlParser>();
+builder.Services.AddScoped<RepositoryService>();
+
+// Git providers
+builder.Services.AddScoped<GitHubProvider>();
+
+// Build application
 var app = builder.Build();
 
+// Seed initial Admin account
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider
@@ -40,11 +55,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
