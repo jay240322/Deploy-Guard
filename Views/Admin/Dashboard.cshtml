@@ -1,0 +1,41 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+    <h1>DeployGuard Admin Dashboard</h1>
+
+    <p class="lead">
+        Welcome, @User.Identity?.Name
+    </p>
+
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h5>Users</h5>
+                <p>Manage DeployGuard users.</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h5>Repositories</h5>
+                <p>Monitor registered repositories.</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h5>Secret Findings</h5>
+                <p>Review detected secrets.</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm p-3">
+                <h5>Audit Logs</h5>
+                <p>Review system activity.</p>
+            </div>
+        </div>
+    </div>
+</div>
