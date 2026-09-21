@@ -10,7 +10,8 @@ public class RepositoryController : Controller
 {
     private readonly RepositoryService _repositoryService;
 
-    public RepositoryController(RepositoryService repositoryService)
+    public RepositoryController(
+        RepositoryService repositoryService)
     {
         _repositoryService = repositoryService;
     }
@@ -102,18 +103,123 @@ public class RepositoryController : Controller
         return View(repository);
     }
 
-    private int? GetCurrentUserId()
+    // GET: /Repository/Edit/5
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
     {
-        var userIdClaim = User.FindFirstValue(
-            ClaimTypes.NameIdentifier);
+        var userId = GetCurrentUserId();
 
-        if (int.TryParse(userIdClaim, out var userId))
+        if (userId == null)
         {
-            return userId;
+            return Challenge();
         }
 
-        return null;
+        var repository =
+            await _repositoryService.GetUserRepositoryAsync(
+                userId.Value,
+                id);
+
+        if (repository == null)
+        {
+            return NotFound();
+        }
+
+        return View(repository);
     }
+
+    // POST: /Repository/Edit/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(
+        int id,
+        string name,
+        string repoUrl)
+    {
+        var userId = GetCurrentUserId();
+
+        if (userId == null)
+        {
+            return Challenge();
+        }
+
+        try
+        {
+            var success =
+                await _repositoryService.UpdateRepositoryAsync(
+                    userId.Value,
+                    id,
+                    name,
+                    repoUrl);
+
+            if (!success)
+            {
+                return NotFound();
+            }
+
+            return RedirectToAction(
+                nameof(Details),
+                new { id });
+        }
+        catch (ArgumentException ex)
+        {
+            ViewBag.Error = ex.Message;
+
+            var repository =
+                await _repositoryService.GetUserRepositoryAsync(
+                    userId.Value,
+                    id);
+
+            if (repository == null)
+            {
+                return NotFound();
+            }
+
+            return View(repository);
+        }
+        catch (InvalidOperationException ex)
+        {
+            ViewBag.Error = ex.Message;
+
+            var repository =
+                await _repositoryService.GetUserRepositoryAsync(
+                    userId.Value,
+                    id);
+
+            if (repository == null)
+            {
+                return NotFound();
+            }
+
+            return View(repository);
+        }
+    }
+
+    // POST: /Repository/Delete/5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var userId = GetCurrentUserId();
+
+        if (userId == null)
+        {
+            return Challenge();
+        }
+
+        var success =
+            await _repositoryService.DeleteRepositoryAsync(
+                userId.Value,
+                id);
+
+        if (!success)
+        {
+            return NotFound();
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
+
+    // POST: /Repository/RefreshMetadata/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> RefreshMetadata(int id)
@@ -139,120 +245,20 @@ public class RepositoryController : Controller
             nameof(Details),
             new { id });
     }
-// POST: /Repository/Edit/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(
-        int id,
-        string name,
-        string repoUrl)
+
+    private int? GetCurrentUserId()
     {
-        var userId = GetCurrentUserId();
+        var userIdClaim =
+            User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
 
-        if (userId == null)
+        if (int.TryParse(
+                userIdClaim,
+                out var userId))
         {
-            return Challenge();
+            return userId;
         }
 
-        if (string.IsNullOrWhiteSpace(name) ||
-            string.IsNullOrWhiteSpace(repoUrl))
-        {
-            ViewBag.Error =
-                "Repository name and URL are required.";
-
-            var existingRepository =
-                await _repositoryService.GetUserRepositoryAsync(
-                    userId.Value,
-                    id);
-
-            if (existingRepository == null)
-            {
-                return NotFound();
-            }
-
-            return View(existingRepository);
-        }
-
-        var repository =
-            await _repositoryService.GetUserRepositoryAsync(
-                userId.Value,
-                id);
-
-        if (repository == null)
-        {
-            return NotFound();
-        }
-
-        repository.Name = name.Trim();
-
-        // If URL changes, re-parse the provider information.
-        if (!repository.RepoUrl.Equals(
-                repoUrl.Trim(),
-                StringComparison.OrdinalIgnoreCase))
-        {
-            var parser = new RepositoryUrlParser();
-
-            try
-            {
-                var repositoryInfo =
-                    parser.Parse(repoUrl.Trim());
-
-                repository.RepoUrl = repoUrl.Trim();
-                repository.Provider = repositoryInfo.Provider;
-                repository.Owner = repositoryInfo.Owner;
-                repository.RepoName = repositoryInfo.RepoName;
-
-                // Clear metadata because the repository changed.
-                repository.DefaultBranch = string.Empty;
-                repository.Language = string.Empty;
-                repository.SizeKb = 0;
-            }
-            catch (ArgumentException ex)
-            {
-                ViewBag.Error = ex.Message;
-                return View(repository);
-            }
-        }
-
-        await HttpContext.RequestServices
-            .GetRequiredService<Deployguard.Data.ApplicationDbContext>()
-            .SaveChangesAsync();
-
-        return RedirectToAction(
-            nameof(Details),
-            new { id });
-    }
-
-    // POST: /Repository/Delete/5
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Delete(int id)
-    {
-        var userId = GetCurrentUserId();
-
-        if (userId == null)
-        {
-            return Challenge();
-        }
-
-        var repository =
-            await _repositoryService.GetUserRepositoryAsync(
-                userId.Value,
-                id);
-
-        if (repository == null)
-        {
-            return NotFound();
-        }
-
-        var context =
-            HttpContext.RequestServices
-                .GetRequiredService<Deployguard.Data.ApplicationDbContext>();
-
-        context.Repositories.Remove(repository);
-
-        await context.SaveChangesAsync();
-
-        return RedirectToAction(nameof(Index));
+        return null;
     }
 }

@@ -9,16 +9,19 @@ public class RepositoryService
 {
     private readonly ApplicationDbContext _context;
     private readonly RepositoryUrlParser _urlParser;
-    private readonly GitHubProvider _gitHubProvider;
+    private readonly IReadOnlyDictionary<string, IGitProvider> _providers;
 
     public RepositoryService(
         ApplicationDbContext context,
         RepositoryUrlParser urlParser,
-        GitHubProvider gitHubProvider)
+        IEnumerable<IGitProvider> providers)
     {
         _context = context;
         _urlParser = urlParser;
-        _gitHubProvider = gitHubProvider;
+
+        _providers = providers.ToDictionary(
+            provider => provider.ProviderName,
+            StringComparer.OrdinalIgnoreCase);
     }
 
     public async Task<Repository> AddRepositoryAsync(
@@ -41,10 +44,8 @@ public class RepositoryService
         name = name.Trim();
         repoUrl = repoUrl.Trim();
 
-        // Parse repository URL
         var repositoryInfo = _urlParser.Parse(repoUrl);
 
-        // Check duplicate repository
         var alreadyExists = await _context.Repositories
             .AnyAsync(r =>
                 r.CreatedByUserId == userId &&
@@ -73,26 +74,7 @@ public class RepositoryService
             CreatedAt = DateTime.UtcNow
         };
 
-        // Fetch GitHub metadata
-        if (repositoryInfo.Provider == "GitHub")
-        {
-            var metadata =
-                await _gitHubProvider.GetMetadataAsync(
-                    repositoryInfo.Owner,
-                    repositoryInfo.RepoName);
-
-            if (metadata != null)
-            {
-                repository.DefaultBranch =
-                    metadata.DefaultBranch;
-
-                repository.Language =
-                    metadata.Language;
-
-                repository.SizeKb =
-                    metadata.SizeKb;
-            }
-        }
+        await ApplyMetadataAsync(repository);
 
         _context.Repositories.Add(repository);
 
@@ -119,26 +101,130 @@ public class RepositoryService
                 r.Id == repositoryId &&
                 r.CreatedByUserId == userId);
     }
-    public async Task<bool> RefreshMetadataAsync(
-    int userId,
-    int repositoryId)
-{
-    var repository = await _context.Repositories
-        .FirstOrDefaultAsync(r =>
-            r.Id == repositoryId &&
-            r.CreatedByUserId == userId);
 
-    if (repository == null)
+    public async Task<bool> RefreshMetadataAsync(
+        int userId,
+        int repositoryId)
     {
-        return false;
+        var repository = await _context.Repositories
+            .FirstOrDefaultAsync(r =>
+                r.Id == repositoryId &&
+                r.CreatedByUserId == userId);
+
+        if (repository == null)
+        {
+            return false;
+        }
+
+        var metadataFound = await ApplyMetadataAsync(repository);
+
+        if (!metadataFound)
+        {
+            return false;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 
-    if (repository.Provider == "GitHub")
+    public async Task<bool> UpdateRepositoryAsync(
+        int userId,
+        int repositoryId,
+        string name,
+        string repoUrl)
     {
-        var metadata =
-            await _gitHubProvider.GetMetadataAsync(
-                repository.Owner,
-                repository.RepoName);
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            throw new ArgumentException(
+                "Repository name is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(repoUrl))
+        {
+            throw new ArgumentException(
+                "Repository URL is required.");
+        }
+
+        var repository = await _context.Repositories
+            .FirstOrDefaultAsync(r =>
+                r.Id == repositoryId &&
+                r.CreatedByUserId == userId);
+
+        if (repository == null)
+        {
+            return false;
+        }
+
+        name = name.Trim();
+        repoUrl = repoUrl.Trim();
+
+        var repositoryInfo = _urlParser.Parse(repoUrl);
+
+        var duplicateExists = await _context.Repositories
+            .AnyAsync(r =>
+                r.Id != repositoryId &&
+                r.CreatedByUserId == userId &&
+                r.RepoUrl == repoUrl);
+
+        if (duplicateExists)
+        {
+            throw new InvalidOperationException(
+                "You have already added this repository.");
+        }
+
+        repository.Name = name;
+        repository.RepoUrl = repoUrl;
+
+        repository.Provider = repositoryInfo.Provider;
+        repository.Owner = repositoryInfo.Owner;
+        repository.RepoName = repositoryInfo.RepoName;
+
+        repository.DefaultBranch = string.Empty;
+        repository.Language = string.Empty;
+        repository.SizeKb = 0;
+
+        await ApplyMetadataAsync(repository);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+    public async Task<bool> DeleteRepositoryAsync(
+        int userId,
+        int repositoryId)
+    {
+        var repository = await _context.Repositories
+            .FirstOrDefaultAsync(r =>
+                r.Id == repositoryId &&
+                r.CreatedByUserId == userId);
+
+        if (repository == null)
+        {
+            return false;
+        }
+
+        _context.Repositories.Remove(repository);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
+
+    private async Task<bool> ApplyMetadataAsync(
+        Repository repository)
+    {
+        if (!_providers.TryGetValue(
+                repository.Provider,
+                out var provider))
+        {
+            return false;
+        }
+
+        var metadata = await provider.GetMetadataAsync(
+            repository.Owner,
+            repository.RepoName);
 
         if (metadata == null)
         {
@@ -153,10 +239,7 @@ public class RepositoryService
 
         repository.SizeKb =
             metadata.SizeKb;
+
+        return true;
     }
-
-    await _context.SaveChangesAsync();
-
-    return true;
-}
 }

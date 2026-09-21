@@ -31,9 +31,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddScoped<RepositoryUrlParser>();
 builder.Services.AddScoped<RepositoryService>();
 
-// Git providers
-builder.Services.AddScoped<GitHubProvider>();
-
+// providers
+builder.Services.AddScoped<IGitProvider, GitHubProvider>();
+builder.Services.AddScoped<IGitProvider, GitLabProvider>();
+builder.Services.AddScoped<IGitProvider, BitbucketProvider>();
+builder.Services.AddScoped<IGitProvider, AzureDevOpsProvider>();
 // Build application
 var app = builder.Build();
 
