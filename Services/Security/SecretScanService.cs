@@ -1,5 +1,6 @@
 using Deployguard.Data;
 using Deployguard.Models;
+using Deployguard.Services.Pipeline;
 using Microsoft.EntityFrameworkCore;
 
 namespace Deployguard.Services.Security;
@@ -9,15 +10,18 @@ public class SecretScanService
     private readonly ApplicationDbContext _context;
     private readonly RepositoryCloneService _cloneService;
     private readonly SecretScannerService _scannerService;
+    private readonly PipelineDetectionService _pipelineDetectionService;
 
     public SecretScanService(
         ApplicationDbContext context,
         RepositoryCloneService cloneService,
-        SecretScannerService scannerService)
+        SecretScannerService scannerService,
+        PipelineDetectionService pipelineDetectionService)
     {
         _context = context;
         _cloneService = cloneService;
         _scannerService = scannerService;
+        _pipelineDetectionService = pipelineDetectionService;
     }
 
     public async Task<SecretScan> StartScanAsync(
@@ -48,6 +52,7 @@ public class SecretScanService
         };
 
         _context.SecretScans.Add(scan);
+
         await _context.SaveChangesAsync();
 
         string? repositoryPath = null;
@@ -59,11 +64,16 @@ public class SecretScanService
                 repository.RepoUrl,
                 scan.Id);
 
-            // 4. Scan repository files
+            // 4. Scan repository for secrets
             var result = await _scannerService.ScanAsync(
                 repositoryPath);
 
-            // 5. Save findings
+            // 5. Detect CI/CD pipeline files
+            await _pipelineDetectionService.DetectAsync(
+                repository.Id,
+                repositoryPath);
+
+            // 6. Save secret findings
             foreach (var finding in result.Findings)
             {
                 _context.SecretFindings.Add(
@@ -80,13 +90,13 @@ public class SecretScanService
                     });
             }
 
-            // 6. Update scan
+            // 7. Update scan
             scan.FilesScanned = result.FilesScanned;
             scan.SecretsFound = result.SecretsFound;
             scan.Status = "Completed";
             scan.CompletedAt = DateTime.UtcNow;
 
-            // 7. Update repository
+            // 8. Update repository
             repository.LastScannedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
@@ -105,7 +115,7 @@ public class SecretScanService
         }
         finally
         {
-            // 8. Always remove cloned repository
+            // 9. Always remove cloned repository
             if (!string.IsNullOrWhiteSpace(repositoryPath))
             {
                 _cloneService.DeleteClone(repositoryPath);

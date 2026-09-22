@@ -1,0 +1,651 @@
+@model Deployguard.Models.PipelineFile
+
+@{
+    ViewData["Title"] = "Pipeline Details";
+
+    var stages = Model.Stages
+        .OrderBy(s => s.Order)
+        .ToList();
+
+    var detectedAt = Model.DetectedAt
+        .ToLocalTime()
+        .ToString("dd MMM yyyy hh:mm tt");
+}
+
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+
+        <div>
+            <h1 class="fw-bold mb-1">
+                <i class="bi bi-diagram-3 me-2"></i>
+                Pipeline Details
+            </h1>
+
+            <p class="text-muted mb-0">
+                Detailed CI/CD pipeline configuration.
+            </p>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <a asp-controller="Pipeline"
+               asp-action="Index"
+               asp-route-repositoryId="@Model.RepositoryId"
+               class="btn btn-outline-secondary">
+
+                <i class="bi bi-arrow-left me-1"></i>
+                Back to Pipelines
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- Pipeline Information -->
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-0">
+                <i class="bi bi-info-circle me-2"></i>
+                Pipeline Information
+            </h5>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="row g-4">
+
+                <!-- Provider -->
+                <div class="col-md-6">
+
+                    <div class="text-muted small mb-1">
+                        Provider
+                    </div>
+
+                    <div class="fw-semibold fs-5">
+                        @Model.Provider
+                    </div>
+
+                </div>
+
+
+                <!-- Pipeline File -->
+                <div class="col-md-6">
+
+                    <div class="text-muted small mb-1">
+                        Pipeline File
+                    </div>
+
+                    <code>
+                        @Model.FilePath
+                    </code>
+
+                </div>
+
+
+                <!-- Detected At -->
+                <div class="col-md-6">
+
+                    <div class="text-muted small mb-1">
+                        Detected At
+                    </div>
+
+                    <div>
+                        @detectedAt
+                    </div>
+
+                </div>
+
+
+                <!-- Total Stages -->
+                <div class="col-md-6">
+
+                    <div class="text-muted small mb-1">
+                        Total Stages
+                    </div>
+
+                    <div class="fw-semibold">
+                        @stages.Count
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- PIPELINE VISUALIZATION -->
+    <!-- ========================================================= -->
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+
+                <div>
+
+                    <h5 class="fw-bold mb-1">
+                        <i class="bi bi-diagram-3 me-2"></i>
+                        Pipeline Visualization
+                    </h5>
+
+                    <small class="text-muted">
+                        Visual representation of pipeline execution flow.
+                    </small>
+
+                </div>
+
+                <div class="small text-muted">
+
+                    <i class="bi bi-arrow-down me-1"></i>
+                    Execution Flow
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            @if (!stages.Any())
+            {
+                <div class="text-center py-5">
+
+                    <i class="bi bi-diagram-2 fs-1 text-muted"></i>
+
+                    <h5 class="fw-bold mt-3">
+                        No Pipeline Stages Available
+                    </h5>
+
+                    <p class="text-muted mb-0">
+                        DeployGuard detected the pipeline file,
+                        but no stages could be visualized.
+                    </p>
+
+                </div>
+            }
+            else
+            {
+                <div class="pipeline-visualization">
+
+                    @foreach (var stage in stages)
+                    {
+                        <div class="pipeline-node-wrapper">
+
+                            <!-- Stage Card -->
+                            <div class="pipeline-node">
+
+                                <div class="pipeline-node-header">
+
+                                    <div class="d-flex align-items-center gap-2">
+
+                                        <span class="pipeline-order">
+                                            @stage.Order
+                                        </span>
+
+                                        <strong>
+                                            @stage.Name
+                                        </strong>
+
+                                    </div>
+
+                                    @if (stage.IsParallel)
+                                    {
+                                        <span class="badge bg-info text-dark">
+                                            Parallel
+                                        </span>
+                                    }
+
+                                </div>
+
+
+                                <div class="pipeline-node-body">
+
+                                    <div class="pipeline-detail">
+
+                                        <span class="pipeline-label">
+                                            <i class="bi bi-link-45deg me-1"></i>
+                                            Depends On
+                                        </span>
+
+                                        @if (string.IsNullOrWhiteSpace(stage.DependsOn))
+                                        {
+                                            <span class="text-muted">
+                                                None
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <code>
+                                                @stage.DependsOn
+                                            </code>
+                                        }
+
+                                    </div>
+
+
+                                    <div class="pipeline-detail">
+
+                                        <span class="pipeline-label">
+                                            <i class="bi bi-filter me-1"></i>
+                                            Condition
+                                        </span>
+
+                                        @if (string.IsNullOrWhiteSpace(stage.Condition))
+                                        {
+                                            <span class="text-muted">
+                                                None
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="pipeline-condition">
+                                                @stage.Condition
+                                            </span>
+                                        }
+
+                                    </div>
+
+
+                                    <div class="pipeline-detail">
+
+                                        <span class="pipeline-label">
+                                            <i class="bi bi-clock me-1"></i>
+                                            Estimated Duration
+                                        </span>
+
+                                        @if (stage.EstimatedDurationSec > 0)
+                                        {
+                                            <span>
+                                                @stage.EstimatedDurationSec sec
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                Not available
+                                            </span>
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- Connector -->
+                            @if (stage != stages.Last())
+                            {
+                                <div class="pipeline-connector">
+
+                                    <div class="pipeline-line"></div>
+
+                                    <div class="pipeline-arrow">
+                                        <i class="bi bi-chevron-down"></i>
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- PIPELINE STAGES TABLE -->
+    <!-- ========================================================= -->
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-list-check me-2"></i>
+                Pipeline Stages
+            </h5>
+
+            <small class="text-muted">
+                Detected stages and their execution information.
+            </small>
+
+        </div>
+
+
+        @if (!stages.Any())
+        {
+            <div class="card-body text-center py-5">
+
+                <i class="bi bi-diagram-2 fs-1 text-muted"></i>
+
+                <h5 class="fw-bold mt-3">
+                    No Stages Parsed
+                </h5>
+
+                <p class="text-muted mb-0">
+                    The pipeline file was detected, but no stages
+                    have been parsed yet.
+                </p>
+
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+                            <th>Order</th>
+                            <th>Stage</th>
+                            <th>Depends On</th>
+                            <th>Parallel</th>
+                            <th>Condition</th>
+                            <th>Duration</th>
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (var stage in stages)
+                        {
+                            <tr>
+
+                                <!-- Order -->
+                                <td>
+
+                                    <span class="badge bg-secondary">
+                                        @stage.Order
+                                    </span>
+
+                                </td>
+
+
+                                <!-- Stage -->
+                                <td>
+
+                                    <strong>
+                                        @stage.Name
+                                    </strong>
+
+                                </td>
+
+
+                                <!-- Depends On -->
+                                <td>
+
+                                    @if (string.IsNullOrWhiteSpace(stage.DependsOn))
+                                    {
+                                        <span class="text-muted">
+                                            —
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <code>
+                                            @stage.DependsOn
+                                        </code>
+                                    }
+
+                                </td>
+
+
+                                <!-- Parallel -->
+                                <td>
+
+                                    @if (stage.IsParallel)
+                                    {
+                                        <span class="badge bg-info text-dark">
+                                            Yes
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-light text-dark">
+                                            No
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Condition -->
+                                <td>
+
+                                    @if (string.IsNullOrWhiteSpace(stage.Condition))
+                                    {
+                                        <span class="text-muted">
+                                            —
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            @stage.Condition
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Duration -->
+                                <td>
+
+                                    @if (stage.EstimatedDurationSec > 0)
+                                    {
+                                        <span>
+                                            @stage.EstimatedDurationSec sec
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            —
+                                        </span>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+
+    <!-- ========================================================= -->
+    <!-- RAW PIPELINE CONFIGURATION -->
+    <!-- ========================================================= -->
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-code-slash me-2"></i>
+                Pipeline Configuration
+            </h5>
+
+            <small class="text-muted">
+                Original configuration detected from the repository.
+            </small>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            <pre class="mb-0 p-4"
+                 style="max-height: 600px; overflow: auto;"><code>@Model.RawYaml</code></pre>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ============================================================= -->
+<!-- PIPELINE VISUALIZATION STYLES -->
+<!-- ============================================================= -->
+
+<style>
+
+    .pipeline-visualization {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 20px 10px;
+    }
+
+    .pipeline-node-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 700px;
+    }
+
+    .pipeline-node {
+        width: 100%;
+        border: 1px solid #dee2e6;
+        border-radius: 12px;
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .pipeline-node:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+    }
+
+    .pipeline-node-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 15px 18px;
+        border-bottom: 1px solid #e9ecef;
+        background: #f8f9fa;
+    }
+
+    .pipeline-order {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #212529;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .pipeline-node-body {
+        padding: 16px 18px;
+    }
+
+    .pipeline-detail {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f3f5;
+    }
+
+    .pipeline-detail:last-child {
+        border-bottom: none;
+    }
+
+    .pipeline-label {
+        color: #6c757d;
+        font-size: 14px;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .pipeline-condition {
+        text-align: right;
+        font-size: 13px;
+        word-break: break-word;
+    }
+
+    .pipeline-connector {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 70px;
+    }
+
+    .pipeline-line {
+        width: 2px;
+        height: 45px;
+        background: #adb5bd;
+    }
+
+    .pipeline-arrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #f8f9fa;
+        border: 1px solid #ced4da;
+        color: #495057;
+        font-size: 12px;
+    }
+
+    @@media (max-width: 768px) {
+
+        .pipeline-node-wrapper {
+            max-width: 100%;
+        }
+
+        .pipeline-detail {
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .pipeline-condition {
+            text-align: left;
+        }
+
+    }
+
+</style>

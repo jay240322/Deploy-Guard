@@ -1,0 +1,268 @@
+@model IEnumerable<Deployguard.Models.PipelineFile>
+
+@{
+    ViewData["Title"] = "Pipeline Detection";
+
+    var repository = ViewBag.Repository as Deployguard.Models.Repository;
+
+    var pipelineFiles = Model.ToList();
+
+    var pipelineProviders = pipelineFiles
+        .Select(p => p.Provider)
+        .Distinct()
+        .Count();
+
+    var totalStages = pipelineFiles
+        .Sum(p => p.Stages.Count);
+}
+
+<div class="container-fluid py-4">
+
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+
+        <div>
+            <h1 class="fw-bold mb-1">
+                <i class="bi bi-diagram-3 me-2"></i>
+                Pipeline Detection
+            </h1>
+
+            <p class="text-muted mb-0">
+                Detected CI/CD pipeline configurations for
+                <strong>@repository?.Name</strong>.
+            </p>
+        </div>
+
+        <div>
+            <a asp-controller="Repository"
+               asp-action="Details"
+               asp-route-id="@repository?.Id"
+               class="btn btn-outline-secondary">
+
+                <i class="bi bi-arrow-left me-1"></i>
+                Back to Repository
+
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="text-muted small mb-1">
+                        Pipeline Files
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        @pipelineFiles.Count
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="text-muted small mb-1">
+                        Pipeline Providers
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        @pipelineProviders
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="col-md-4">
+
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="text-muted small mb-1">
+                        Pipeline Stages
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        @totalStages
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Detected Pipelines -->
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white py-3">
+
+            <h5 class="fw-bold mb-1">
+                <i class="bi bi-gear-wide-connected me-2"></i>
+                Detected Pipelines
+            </h5>
+
+            <small class="text-muted">
+                CI/CD configuration files discovered in the repository.
+            </small>
+
+        </div>
+
+
+        @if (!pipelineFiles.Any())
+        {
+            <div class="card-body text-center py-5">
+
+                <i class="bi bi-diagram-3 fs-1 text-muted"></i>
+
+                <h5 class="fw-bold mt-3">
+                    No Pipeline Detected
+                </h5>
+
+                <p class="text-muted mb-0">
+                    No supported CI/CD configuration was found
+                    in this repository.
+                </p>
+
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+                        <tr>
+                            <th>Provider</th>
+                            <th>Pipeline File</th>
+                            <th>Stages</th>
+                            <th>Detected</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var pipeline in pipelineFiles)
+                        {
+                            <tr>
+
+                                <!-- Provider -->
+                                <td>
+
+                                    @if (pipeline.Provider == "GitHub Actions")
+                                    {
+                                        <span class="badge bg-dark">
+                                            <i class="bi bi-github me-1"></i>
+                                            GitHub Actions
+                                        </span>
+                                    }
+                                    else if (pipeline.Provider == "GitLab CI")
+                                    {
+                                        <span class="badge bg-warning text-dark">
+                                            GitLab CI
+                                        </span>
+                                    }
+                                    else if (pipeline.Provider == "Jenkins")
+                                    {
+                                        <span class="badge bg-primary">
+                                            Jenkins
+                                        </span>
+                                    }
+                                    else if (pipeline.Provider == "Azure Pipelines")
+                                    {
+                                        <span class="badge bg-info text-dark">
+                                            Azure Pipelines
+                                        </span>
+                                    }
+                                    else if (pipeline.Provider == "CircleCI")
+                                    {
+                                        <span class="badge bg-secondary">
+                                            CircleCI
+                                        </span>
+                                    }
+                                    else if (pipeline.Provider == "Bitbucket Pipelines")
+                                    {
+                                        <span class="badge bg-primary">
+                                            Bitbucket Pipelines
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+                                            @pipeline.Provider
+                                        </span>
+                                    }
+
+                                </td>
+
+
+                                <!-- Pipeline File -->
+                                <td>
+                                    <code>
+                                        @pipeline.FilePath
+                                    </code>
+                                </td>
+
+
+                                <!-- Stages -->
+                                <td>
+                                    <span class="fw-semibold">
+                                        @pipeline.Stages.Count
+                                    </span>
+                                </td>
+
+
+                                <!-- Detected -->
+                                <td>
+                                    @pipeline.DetectedAt.ToLocalTime().ToString("dd MMM yyyy hh:mm tt")
+                                </td>
+
+
+                                <!-- Action -->
+                                <td class="text-end">
+
+                                    <a asp-controller="Pipeline"
+                                       asp-action="Details"
+                                       asp-route-id="@pipeline.Id"
+                                       class="btn btn-sm btn-outline-primary">
+
+                                        <i class="bi bi-eye me-1"></i>
+                                        View Pipeline
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+        }
+
+    </div>
+
+</div>
