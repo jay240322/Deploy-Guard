@@ -1,0 +1,507 @@
+@model Deployguard.Models.SecretScan
+
+@{
+    ViewData["Title"] = "Security Scan Results";
+
+    var criticalCount = Model.Findings.Count(f =>
+        f.Severity.Equals("Critical", StringComparison.OrdinalIgnoreCase) &&
+        !f.IsFalsePositive);
+
+    var highCount = Model.Findings.Count(f =>
+        f.Severity.Equals("High", StringComparison.OrdinalIgnoreCase) &&
+        !f.IsFalsePositive);
+
+    var mediumCount = Model.Findings.Count(f =>
+        f.Severity.Equals("Medium", StringComparison.OrdinalIgnoreCase) &&
+        !f.IsFalsePositive);
+
+    var lowCount = Model.Findings.Count(f =>
+        f.Severity.Equals("Low", StringComparison.OrdinalIgnoreCase) &&
+        !f.IsFalsePositive);
+
+    var activeFindingCount = Model.Findings.Count(f =>
+        !f.IsFalsePositive);
+
+    TimeSpan duration = TimeSpan.Zero;
+
+    if (Model.CompletedAt.HasValue)
+    {
+        duration = Model.CompletedAt.Value - Model.StartedAt;
+    }
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1">Security Scan Results</h1>
+
+        <p class="text-muted mb-0">
+            Repository:
+            <strong>
+                @(Model.Repository?.Name ?? "Unknown Repository")
+            </strong>
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a asp-controller="Repository"
+           asp-action="Details"
+           asp-route-id="@Model.RepositoryId"
+           class="btn btn-secondary">
+            Back to Repository
+        </a>
+
+        <a asp-controller="Scan"
+           asp-action="History"
+           class="btn btn-outline-primary">
+            Scan History
+        </a>
+    </div>
+</div>
+
+@if (Model.Status.Equals(
+    "Completed",
+    StringComparison.OrdinalIgnoreCase))
+{
+    <div class="alert alert-success shadow-sm">
+        <strong>Scan completed successfully.</strong>
+        The repository was scanned for exposed secrets.
+    </div>
+}
+else if (Model.Status.Equals(
+    "Failed",
+    StringComparison.OrdinalIgnoreCase))
+{
+    <div class="alert alert-danger shadow-sm">
+        <strong>Scan failed.</strong>
+        Please try scanning the repository again.
+    </div>
+}
+else
+{
+    <div class="alert alert-warning shadow-sm">
+        <strong>Scan status:</strong>
+        @Model.Status
+    </div>
+}
+
+<h3 class="mb-3">
+    Scan Overview
+</h3>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">
+                    Files Scanned
+                </div>
+
+                <h2 class="mt-2 mb-0">
+                    @Model.FilesScanned
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">
+                    Secrets Found
+                </div>
+
+                <h2 class="mt-2 mb-0">
+                    @Model.SecretsFound
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">
+                    Active Findings
+                </div>
+
+                <h2 class="mt-2 mb-0">
+                    @activeFindingCount
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-muted small">
+                    Scan Status
+                </div>
+
+                <h5 class="mt-3 mb-0">
+                    @Model.Status
+                </h5>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+
+        <h5 class="card-title mb-3">
+            Scan Information
+        </h5>
+
+        <div class="row">
+
+            <div class="col-md-3 mb-3">
+                <div class="text-muted small">
+                    Status
+                </div>
+
+                @if (Model.Status.Equals(
+                    "Completed",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    <span class="badge bg-success mt-1">
+                        Completed
+                    </span>
+                }
+                else if (Model.Status.Equals(
+                    "Failed",
+                    StringComparison.OrdinalIgnoreCase))
+                {
+                    <span class="badge bg-danger mt-1">
+                        Failed
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark mt-1">
+                        @Model.Status
+                    </span>
+                }
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="text-muted small">
+                    Scan Started
+                </div>
+
+                <div class="mt-1">
+                    @Model.StartedAt
+                        .ToLocalTime()
+                        .ToString("dd MMM yyyy HH:mm")
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="text-muted small">
+                    Scan Completed
+                </div>
+
+                <div class="mt-1">
+                    @if (Model.CompletedAt.HasValue)
+                    {
+                        var completedTime =
+                            Model.CompletedAt.Value.ToLocalTime();
+
+                        @completedTime.ToString(
+                            "dd MMM yyyy HH:mm")
+                    }
+                    else
+                    {
+                        <span class="text-muted">
+                            Not completed
+                        </span>
+                    }
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="text-muted small">
+                    Duration
+                </div>
+
+                <div class="mt-1">
+                    @if (Model.CompletedAt.HasValue)
+                    {
+                        if (duration.TotalSeconds < 1)
+                        {
+                            <span>
+                                Less than 1 second
+                            </span>
+                        }
+                        else
+                        {
+                            <span>
+                                @duration.Minutes min
+                                @duration.Seconds sec
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">
+                            In progress
+                        </span>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<h3 class="mb-3">
+    Severity Summary
+</h3>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card border-danger shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-danger fw-semibold">
+                    Critical
+                </div>
+
+                <h2 class="mb-0 mt-2">
+                    @criticalCount
+                </h2>
+
+                <small class="text-muted">
+                    Critical security findings
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-warning shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-warning fw-semibold">
+                    High
+                </div>
+
+                <h2 class="mb-0 mt-2">
+                    @highCount
+                </h2>
+
+                <small class="text-muted">
+                    High-risk findings
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-info shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-info fw-semibold">
+                    Medium
+                </div>
+
+                <h2 class="mb-0 mt-2">
+                    @mediumCount
+                </h2>
+
+                <small class="text-muted">
+                    Medium-risk findings
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card border-secondary shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary fw-semibold">
+                    Low
+                </div>
+
+                <h2 class="mb-0 mt-2">
+                    @lowCount
+                </h2>
+
+                <small class="text-muted">
+                    Low-risk findings
+                </small>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+    <div>
+        <h3 class="mb-1">
+            Security Findings
+        </h3>
+
+        <p class="text-muted mb-0">
+            Potential secrets detected during this scan.
+        </p>
+    </div>
+
+    <span class="badge bg-dark fs-6">
+        @Model.Findings.Count finding(s)
+    </span>
+
+</div>
+
+@if (!Model.Findings.Any())
+{
+    <div class="card shadow-sm mb-4">
+        <div class="card-body text-center py-5">
+
+            <div class="display-6 text-success mb-3">
+                ✓
+            </div>
+
+            <h4 class="text-success">
+                No Secrets Found
+            </h4>
+
+            <p class="text-muted mb-0">
+                No potential secrets were detected
+                in this repository.
+            </p>
+
+        </div>
+    </div>
+}
+else
+{
+    <div class="card shadow-sm mb-4">
+
+        <div class="table-responsive">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-light">
+                    <tr>
+                        <th>Severity</th>
+                        <th>Secret Type</th>
+                        <th>Category</th>
+                        <th>File</th>
+                        <th>Line</th>
+                        <th>Masked Value</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                @foreach (var finding in Model.Findings)
+                {
+                    <tr>
+
+                        <td>
+                            @if (finding.Severity.Equals(
+                                "Critical",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-danger">
+                                    Critical
+                                </span>
+                            }
+                            else if (finding.Severity.Equals(
+                                "High",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-warning text-dark">
+                                    High
+                                </span>
+                            }
+                            else if (finding.Severity.Equals(
+                                "Medium",
+                                StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="badge bg-info text-dark">
+                                    Medium
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">
+                                    @finding.Severity
+                                </span>
+                            }
+                        </td>
+
+                        <td>
+                            <strong>
+                                @(finding.SecretRule?.Name
+                                    ?? "Unknown Rule")
+                            </strong>
+                        </td>
+
+                        <td>
+                            @(finding.SecretRule?.Category ?? "-")
+                        </td>
+
+                        <td>
+                            <code>
+                                @finding.FilePath
+                            </code>
+                        </td>
+
+                        <td>
+                            @finding.LineNumber
+                        </td>
+
+                        <td>
+                            <code>
+                                @finding.MaskedValue
+                            </code>
+                        </td>
+
+                        <td>
+                            @if (finding.IsFalsePositive)
+                            {
+                                <span class="badge bg-secondary">
+                                    False Positive
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    Open
+                                </span>
+                            }
+                        </td>
+
+                    </tr>
+                }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+}
+
+<div class="d-flex justify-content-between align-items-center mb-5">
+
+    <a asp-controller="Repository"
+       asp-action="Details"
+       asp-route-id="@Model.RepositoryId"
+       class="btn btn-secondary">
+        ← Back to Repository
+    </a>
+
+    <a asp-controller="Scan"
+       asp-action="History"
+       class="btn btn-outline-primary">
+        View Scan History →
+    </a>
+
+</div>
