@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Deployguard.Services;
 using Microsoft.AspNetCore.Authorization;
+using Deployguard.Services.Security;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Deployguard.Controllers;
@@ -9,11 +10,14 @@ namespace Deployguard.Controllers;
 public class RepositoryController : Controller
 {
     private readonly RepositoryService _repositoryService;
+    private readonly SecretScanService _scanService;
 
     public RepositoryController(
-        RepositoryService repositoryService)
+        RepositoryService repositoryService,
+        SecretScanService scanService)
     {
         _repositoryService = repositoryService;
+        _scanService = scanService;
     }
 
     // GET: /Repository
@@ -99,6 +103,13 @@ public class RepositoryController : Controller
         {
             return NotFound();
         }
+
+        var latestScan =
+            await _scanService.GetLatestScanAsync(
+                id,
+                userId.Value);
+
+        ViewBag.LatestScan = latestScan;
 
         return View(repository);
     }
