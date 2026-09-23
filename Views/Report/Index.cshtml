@@ -1,0 +1,425 @@
+@model Deployguard.Models.ReportViewModel
+@{
+    ViewData["Title"] = "Security & Pipeline Report";
+}
+
+<div class="container py-4">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-file-earmark-bar-graph me-2"></i>
+                Security & Pipeline Report
+            </h2>
+
+            <p class="text-muted mb-0">
+                Combined security scan and CI/CD pipeline analysis.
+            </p>
+        </div>
+
+        <a asp-controller="Repository"
+           asp-action="Details"
+           asp-route-id="@Model.RepositoryId"
+           class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i>
+            Back
+        </a>
+    </div>
+
+    <!-- Repository Information -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-git me-2"></i>
+                Repository Information
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <strong>Repository:</strong>
+                    <div>@Model.RepositoryName</div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <strong>Provider:</strong>
+                    <div>@Model.Provider</div>
+                </div>
+
+                <div class="col-md-12">
+                    <strong>Repository URL:</strong>
+
+                    <div>
+                        <a href="@Model.RepositoryUrl"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            @Model.RepositoryUrl
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Security Summary -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-shield-check me-2"></i>
+                Security Scan Summary
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center">
+
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3">
+                        <div class="text-muted">
+                            Files Scanned
+                        </div>
+
+                        <h3 class="mb-0">
+                            @Model.FilesScanned
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3">
+                        <div class="text-muted">
+                            Secrets Found
+                        </div>
+
+                        <h3 class="mb-0">
+                            @Model.SecretsFound
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3">
+                        <div class="text-muted">
+                            Scan Status
+                        </div>
+
+                        <h3 class="mb-0">
+                            @Model.ScanStatus
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3">
+                        <div class="text-muted">
+                            Scan ID
+                        </div>
+
+                        <h3 class="mb-0">
+                            @(Model.ScanId == 0
+                                ? "-"
+                                : Model.ScanId.ToString())
+                        </h3>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr />
+
+            <h6 class="fw-bold mb-3">
+                Findings by Severity
+            </h6>
+
+            <div class="row text-center">
+
+                <div class="col-md-3 mb-2">
+                    <div class="border rounded p-3">
+                        <strong>Critical</strong>
+                        <div class="fs-4">
+                            @Model.CriticalCount
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-2">
+                    <div class="border rounded p-3">
+                        <strong>High</strong>
+                        <div class="fs-4">
+                            @Model.HighCount
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-2">
+                    <div class="border rounded p-3">
+                        <strong>Medium</strong>
+                        <div class="fs-4">
+                            @Model.MediumCount
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-2">
+                    <div class="border rounded p-3">
+                        <strong>Low</strong>
+                        <div class="fs-4">
+                            @Model.LowCount
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Secret Findings -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-exclamation-triangle me-2"></i>
+                Secret Findings
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (!Model.Findings.Any())
+            {
+                <div class="alert alert-success mb-0">
+                    <i class="bi bi-check-circle me-2"></i>
+                    No secret findings were detected.
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover align-middle">
+
+                        <thead>
+                            <tr>
+                                <th>Rule</th>
+                                <th>File</th>
+                                <th>Line</th>
+                                <th>Severity</th>
+                                <th>Masked Value</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var finding in Model.Findings)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @(finding.SecretRule?.Name ?? "Unknown")
+                                    </td>
+
+                                    <td>
+                                        @finding.FilePath
+                                    </td>
+
+                                    <td>
+                                        @finding.LineNumber
+                                    </td>
+
+                                    <td>
+                                        @finding.Severity
+                                    </td>
+
+                                    <td>
+                                        <code>
+                                            @finding.MaskedValue
+                                        </code>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <!-- Pipeline Summary -->
+    <div class="card shadow-sm mb-4">
+
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="bi bi-diagram-3 me-2"></i>
+                CI/CD Pipeline Summary
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row text-center mb-4">
+
+                <div class="col-md-6 mb-3">
+                    <div class="border rounded p-3">
+                        <div class="text-muted">
+                            Pipeline Files
+                        </div>
+
+                        <h3 class="mb-0">
+                            @Model.PipelineFileCount
+                        </h3>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <div class="border rounded p-3">
+                        <div class="text-muted">
+                            Pipeline Stages
+                        </div>
+
+                        <h3 class="mb-0">
+                            @Model.PipelineStageCount
+                        </h3>
+                    </div>
+                </div>
+
+            </div>
+
+            @if (!Model.PipelineFiles.Any())
+            {
+                <div class="alert alert-info mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    No CI/CD pipeline configuration was detected.
+                </div>
+            }
+            else
+            {
+                <h6 class="fw-bold mb-3">
+                    Detected Pipeline Files
+                </h6>
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead>
+                            <tr>
+                                <th>File</th>
+                                <th>Provider</th>
+                                <th>Stages</th>
+                                <th>Detected</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var pipeline in Model.PipelineFiles)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @pipeline.FilePath
+                                    </td>
+
+                                    <td>
+                                        @pipeline.Provider
+                                    </td>
+
+                                    <td>
+                                        @pipeline.Stages.Count
+                                    </td>
+
+                                    <td>
+                                        @pipeline.DetectedAt.ToLocalTime()
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                <h6 class="fw-bold mt-4 mb-3">
+                    Pipeline Stages
+                </h6>
+
+                <div class="table-responsive">
+
+                    <table class="table table-bordered table-hover">
+
+                        <thead>
+                            <tr>
+                                <th>Order</th>
+                                <th>Stage</th>
+                                <th>Depends On</th>
+                                <th>Parallel</th>
+                                <th>Condition</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var stage in Model.PipelineStages)
+                            {
+                                <tr>
+
+                                    <td>
+                                        @stage.Order
+                                    </td>
+
+                                    <td>
+                                        @stage.Name
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(stage.DependsOn)
+                                            ? "-"
+                                            : stage.DependsOn)
+                                    </td>
+
+                                    <td>
+                                        @(stage.IsParallel ? "Yes" : "No")
+                                    </td>
+
+                                    <td>
+                                        @(string.IsNullOrWhiteSpace(stage.Condition)
+                                            ? "-"
+                                            : stage.Condition)
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <!-- Report Footer -->
+    <div class="text-muted small text-end">
+        Report generated:
+        @Model.GeneratedAt.ToLocalTime()
+    </div>
+
+</div>

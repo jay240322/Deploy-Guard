@@ -1,275 +1,264 @@
 @model Deployguard.Models.Repository
 
 @{
-    ViewData["Title"] = "Repository Details";
+ViewData["Title"] = "Repository Details";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-4">
+<div>
+    <h1>@Model.Name</h1>
 
-    <div>
+    <p class="text-muted mb-0">
+        Repository information
+    </p>
+</div>
 
-        <h1>@Model.Name</h1>
+<div class="d-flex gap-2">
 
-        <p class="text-muted mb-0">
-            Repository information
-        </p>
+    <!-- Refresh Metadata -->
+    <form asp-controller="Repository"
+          asp-action="RefreshMetadata"
+          asp-route-id="@Model.Id"
+          method="post"
+          class="d-inline">
 
-    </div>
+        @Html.AntiForgeryToken()
 
+        <button type="submit"
+                class="btn btn-primary btn-sm">
 
-    <div class="d-flex gap-2">
-
-        <!-- Refresh Metadata -->
-        <form asp-controller="Repository"
-              asp-action="RefreshMetadata"
-              asp-route-id="@Model.Id"
-              method="post"
-              class="d-inline">
-
-            @Html.AntiForgeryToken()
-
-            <button type="submit"
-                    class="btn btn-primary btn-sm">
-
-                <i class="bi bi-arrow-clockwise me-1"></i>
-                Refresh Metadata
-
-            </button>
-
-        </form>
-
-
-        <!-- Edit -->
-        <a asp-controller="Repository"
-           asp-action="Edit"
-           asp-route-id="@Model.Id"
-           class="btn btn-warning btn-sm">
-
-            <i class="bi bi-pencil me-1"></i>
-            Edit
-
-        </a>
-
-
-        <!-- Scan Repository -->
-        <form asp-controller="Scan"
-              asp-action="Start"
-              method="post"
-              class="d-inline">
-
-            @Html.AntiForgeryToken()
-
-            <input type="hidden"
-                   name="repositoryId"
-                   value="@Model.Id" />
-
-            <button type="submit"
-                    class="btn btn-success btn-sm">
-
-                <i class="bi bi-shield-check me-1"></i>
-                Scan Repository
-
-            </button>
-
-        </form>
-
-
-        <!-- View Pipeline -->
-        <a asp-controller="Pipeline"
-           asp-action="Index"
-           asp-route-repositoryId="@Model.Id"
-           class="btn btn-info btn-sm">
-
-            <i class="bi bi-diagram-3 me-1"></i>
-            View Pipeline
-
-        </a>
-
-
-        <!-- Delete -->
-        <button type="button"
-                class="btn btn-danger btn-sm"
-                data-bs-toggle="modal"
-                data-bs-target="#deleteRepositoryModal">
-
-            <i class="bi bi-trash me-1"></i>
-            Delete
+            <i class="bi bi-arrow-clockwise me-1"></i>
+            Refresh Metadata
 
         </button>
 
+    </form>
 
-        <!-- Back -->
-        <a asp-controller="Repository"
-           asp-action="Index"
-           class="btn btn-secondary btn-sm">
+    <!-- Edit -->
+    <a asp-controller="Repository"
+       asp-action="Edit"
+       asp-route-id="@Model.Id"
+       class="btn btn-warning btn-sm">
 
-            <i class="bi bi-arrow-left me-1"></i>
-            Back to Repositories
+        <i class="bi bi-pencil me-1"></i>
+        Edit
 
-        </a>
+    </a>
 
-    </div>
+    <!-- Scan Repository -->
+    <form asp-controller="Scan"
+          asp-action="Start"
+          method="post"
+          class="d-inline">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               name="repositoryId"
+               value="@Model.Id" />
+
+        <button type="submit"
+                class="btn btn-success btn-sm">
+
+            <i class="bi bi-shield-check me-1"></i>
+            Scan Repository
+
+        </button>
+
+    </form>
+
+    <!-- View Pipeline -->
+    <a asp-controller="Pipeline"
+       asp-action="Index"
+       asp-route-repositoryId="@Model.Id"
+       class="btn btn-info btn-sm">
+
+        <i class="bi bi-diagram-3 me-1"></i>
+        View Pipeline
+
+    </a>
+
+    <!-- View Report -->
+    <a asp-controller="Report"
+       asp-action="Index"
+       asp-route-repositoryId="@Model.Id"
+       class="btn btn-dark btn-sm">
+
+        <i class="bi bi-file-earmark-bar-graph me-1"></i>
+        View Report
+
+    </a>
+
+    <!-- Delete -->
+    <button type="button"
+            class="btn btn-danger btn-sm"
+            data-bs-toggle="modal"
+            data-bs-target="#deleteRepositoryModal">
+
+        <i class="bi bi-trash me-1"></i>
+        Delete
+
+    </button>
+
+    <!-- Back -->
+    <a asp-controller="Repository"
+       asp-action="Index"
+       class="btn btn-secondary btn-sm">
+
+        <i class="bi bi-arrow-left me-1"></i>
+        Back to Repositories
+
+    </a>
 
 </div>
-
+</div>
 
 <!-- Repository Information -->
 
 <div class="card shadow-sm">
 
-    <div class="card-body">
+<div class="card-body">
 
-        <dl class="row">
+    <dl class="row">
 
-            <!-- Repository Name -->
+        <!-- Repository Name -->
+        <dt class="col-sm-3">
+            Repository Name
+        </dt>
 
-            <dt class="col-sm-3">
-                Repository Name
-            </dt>
-
-            <dd class="col-sm-9">
-                @Model.Name
-            </dd>
-
-
-            <!-- Repository URL -->
-
-            <dt class="col-sm-3">
-                Repository URL
-            </dt>
-
-            <dd class="col-sm-9">
-
-                <a href="@Model.RepoUrl"
-                   target="_blank"
-                   rel="noopener noreferrer">
-
-                    @Model.RepoUrl
-
-                </a>
-
-            </dd>
+        <dd class="col-sm-9">
+            @Model.Name
+        </dd>
 
 
-            <!-- Provider -->
+        <!-- Repository URL -->
+        <dt class="col-sm-3">
+            Repository URL
+        </dt>
 
-            <dt class="col-sm-3">
-                Provider
-            </dt>
+        <dd class="col-sm-9">
 
-            <dd class="col-sm-9">
-                @Model.Provider
-            </dd>
+            <a href="@Model.RepoUrl"
+               target="_blank"
+               rel="noopener noreferrer">
 
+                @Model.RepoUrl
 
-            <!-- Owner -->
+            </a>
 
-            <dt class="col-sm-3">
-                Owner
-            </dt>
-
-            <dd class="col-sm-9">
-
-                @(string.IsNullOrEmpty(Model.Owner)
-                    ? "Pending"
-                    : Model.Owner)
-
-            </dd>
+        </dd>
 
 
-            <!-- Repository -->
+        <!-- Provider -->
+        <dt class="col-sm-3">
+            Provider
+        </dt>
 
-            <dt class="col-sm-3">
-                Repository
-            </dt>
-
-            <dd class="col-sm-9">
-
-                @(string.IsNullOrEmpty(Model.RepoName)
-                    ? "Pending"
-                    : Model.RepoName)
-
-            </dd>
+        <dd class="col-sm-9">
+            @Model.Provider
+        </dd>
 
 
-            <!-- Default Branch -->
+        <!-- Owner -->
+        <dt class="col-sm-3">
+            Owner
+        </dt>
 
-            <dt class="col-sm-3">
-                Default Branch
-            </dt>
+        <dd class="col-sm-9">
 
-            <dd class="col-sm-9">
+            @(string.IsNullOrEmpty(Model.Owner)
+                ? "Pending"
+                : Model.Owner)
 
-                @(string.IsNullOrEmpty(Model.DefaultBranch)
-                    ? "Pending"
-                    : Model.DefaultBranch)
-
-            </dd>
-
-
-            <!-- Language -->
-
-            <dt class="col-sm-3">
-                Language
-            </dt>
-
-            <dd class="col-sm-9">
-
-                @(string.IsNullOrEmpty(Model.Language)
-                    ? "Pending"
-                    : Model.Language)
-
-            </dd>
+        </dd>
 
 
-            <!-- Size -->
+        <!-- Repository -->
+        <dt class="col-sm-3">
+            Repository
+        </dt>
 
-            <dt class="col-sm-3">
-                Size
-            </dt>
+        <dd class="col-sm-9">
 
-            <dd class="col-sm-9">
-                @Model.SizeKb KB
-            </dd>
+            @(string.IsNullOrEmpty(Model.RepoName)
+                ? "Pending"
+                : Model.RepoName)
+
+        </dd>
 
 
-            <!-- Added -->
+        <!-- Default Branch -->
+        <dt class="col-sm-3">
+            Default Branch
+        </dt>
 
-            <dt class="col-sm-3">
-                Added
-            </dt>
+        <dd class="col-sm-9">
 
-            <dd class="col-sm-9">
+            @(string.IsNullOrEmpty(Model.DefaultBranch)
+                ? "Pending"
+                : Model.DefaultBranch)
 
-                @Model.CreatedAt
+        </dd>
+
+
+        <!-- Language -->
+        <dt class="col-sm-3">
+            Language
+        </dt>
+
+        <dd class="col-sm-9">
+
+            @(string.IsNullOrEmpty(Model.Language)
+                ? "Pending"
+                : Model.Language)
+
+        </dd>
+
+
+        <!-- Size -->
+        <dt class="col-sm-3">
+            Size
+        </dt>
+
+        <dd class="col-sm-9">
+            @Model.SizeKb KB
+        </dd>
+
+
+        <!-- Added -->
+        <dt class="col-sm-3">
+            Added
+        </dt>
+
+        <dd class="col-sm-9">
+
+            @Model.CreatedAt
+                .ToLocalTime()
+                .ToString("dd MMM yyyy HH\\:mm")
+
+        </dd>
+
+
+        <!-- Last Scanned -->
+        <dt class="col-sm-3">
+            Last Scanned
+        </dt>
+
+        <dd class="col-sm-9">
+
+            @(Model.LastScannedAt.HasValue
+                ? Model.LastScannedAt.Value
                     .ToLocalTime()
                     .ToString("dd MMM yyyy HH\\:mm")
+                : "Never")
 
-            </dd>
+        </dd>
 
-
-            <!-- Last Scanned -->
-
-            <dt class="col-sm-3">
-                Last Scanned
-            </dt>
-
-            <dd class="col-sm-9">
-
-                @(Model.LastScannedAt.HasValue
-                    ? Model.LastScannedAt.Value
-                        .ToLocalTime()
-                        .ToString("dd MMM yyyy HH\\:mm")
-                    : "Never")
-
-            </dd>
-
-        </dl>
-
-    </div>
+    </dl>
 
 </div>
 
+</div>
 
 <!-- Delete Confirmation Modal -->
 
@@ -279,86 +268,81 @@
      aria-labelledby="deleteRepositoryModalLabel"
      aria-hidden="true">
 
-    <div class="modal-dialog modal-dialog-centered">
+<div class="modal-dialog modal-dialog-centered">
 
-        <div class="modal-content">
+    <div class="modal-content">
 
 
-            <!-- Modal Header -->
+        <!-- Modal Header -->
+        <div class="modal-header">
 
-            <div class="modal-header">
+            <h5 class="modal-title"
+                id="deleteRepositoryModalLabel">
 
-                <h5 class="modal-title"
-                    id="deleteRepositoryModalLabel">
+                Delete Repository
+
+            </h5>
+
+            <button type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close">
+            </button>
+
+        </div>
+
+
+        <!-- Modal Body -->
+        <div class="modal-body">
+
+            <p class="mb-2">
+
+                Are you sure you want to delete
+                <strong>@Model.Name</strong>?
+
+            </p>
+
+            <p class="text-muted mb-0">
+
+                This action cannot be undone.
+
+            </p>
+
+        </div>
+
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+
+            <button type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal">
+
+                Cancel
+
+            </button>
+
+
+            <form asp-controller="Repository"
+                  asp-action="Delete"
+                  asp-route-id="@Model.Id"
+                  method="post"
+                  class="d-inline">
+
+                @Html.AntiForgeryToken()
+
+                <button type="submit"
+                        class="btn btn-danger">
 
                     Delete Repository
 
-                </h5>
-
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="modal"
-                        aria-label="Close">
                 </button>
 
-            </div>
-
-
-            <!-- Modal Body -->
-
-            <div class="modal-body">
-
-                <p class="mb-2">
-
-                    Are you sure you want to delete
-
-                    <strong>@Model.Name</strong>?
-
-                </p>
-
-                <p class="text-muted mb-0">
-
-                    This action cannot be undone.
-
-                </p>
-
-            </div>
-
-
-            <!-- Modal Footer -->
-
-            <div class="modal-footer">
-
-                <button type="button"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal">
-
-                    Cancel
-
-                </button>
-
-
-                <form asp-controller="Repository"
-                      asp-action="Delete"
-                      asp-route-id="@Model.Id"
-                      method="post"
-                      class="d-inline">
-
-                    @Html.AntiForgeryToken()
-
-                    <button type="submit"
-                            class="btn btn-danger">
-
-                        Delete Repository
-
-                    </button>
-
-                </form>
-
-            </div>
+            </form>
 
         </div>
 
     </div>
 
+</div>
 </div>
