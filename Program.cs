@@ -6,8 +6,11 @@ using Deployguard.Services.Reports;
 using Deployguard.Services.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+QuestPDF.Settings.License = LicenseType.Community;
 
 // MVC
 builder.Services.AddControllersWithViews();
@@ -47,6 +50,7 @@ builder.Services.AddScoped<PipelineDetectionService>();
 
 // Report services
 builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<PdfReportService>();
 
 // Git providers
 builder.Services.AddScoped<IGitProvider, GitHubProvider>();
