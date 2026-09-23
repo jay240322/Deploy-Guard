@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Deployguard.Models;
 using YamlDotNet.RepresentationModel;
 
@@ -12,13 +11,12 @@ public class PipelineParserService
         return pipelineFile.Provider switch
         {
             "GitHub Actions" => ParseGitHubActions(pipelineFile),
-            "GitLab CI" => ParseGitLabCi(pipelineFile),
-            "Azure Pipelines" => ParseAzurePipelines(pipelineFile),
-            "CircleCI" => ParseCircleCi(pipelineFile),
-            "Bitbucket Pipelines" => ParseBitbucketPipelines(pipelineFile),
+            "Jenkins" => ParseJenkins(pipelineFile),
             _ => new List<PipelineStage>()
         };
     }
+
+    // GitHub Actions Parser
 
     private List<PipelineStage> ParseGitHubActions(
         PipelineFile pipelineFile)
@@ -104,33 +102,222 @@ public class PipelineParserService
         return stages;
     }
 
-    private List<PipelineStage> ParseGitLabCi(
+    // Jenkins Parser
+
+    private List<PipelineStage> ParseJenkins(
         PipelineFile pipelineFile)
     {
-        // GitLab parser will be added next.
-        return new List<PipelineStage>();
+        var stages = new List<PipelineStage>();
+
+        var lines = pipelineFile.RawYaml
+            .Split(
+                new[] { "\r\n", "\n", "\r" },
+                StringSplitOptions.None);
+
+        var order = 1;
+
+        for (var i = 0; i < lines.Length; i++)
+        {
+            var line = lines[i].Trim();
+
+            if (!line.StartsWith("stage("))
+            {
+                continue;
+            }
+
+            var stageName = ExtractJenkinsStageName(line);
+
+            if (string.IsNullOrWhiteSpace(stageName))
+            {
+                continue;
+            }
+
+            var dependsOn = string.Empty;
+            var condition = string.Empty;
+            var isParallel = false;
+
+            var blockEnd = FindJenkinsStageBlockEnd(
+                lines,
+                i);
+
+            for (var j = i + 1;
+                 j < blockEnd;
+                 j++)
+            {
+                var innerLine = lines[j].Trim();
+
+                if (innerLine.StartsWith("when"))
+                {
+                    condition = FindJenkinsCondition(
+                        lines,
+                        j,
+                        blockEnd);
+                }
+
+                if (innerLine.StartsWith("parallel"))
+                {
+                    isParallel = true;
+                }
+            }
+
+            /*
+             * Jenkins declarative stages normally execute
+             * sequentially unless parallel execution is used.
+             */
+            if (order > 1 &&
+                string.IsNullOrWhiteSpace(dependsOn))
+            {
+                dependsOn = stages.LastOrDefault()?.Name
+                            ?? string.Empty;
+            }
+
+            stages.Add(
+                new PipelineStage
+                {
+                    PipelineFileId = pipelineFile.Id,
+                    Name = stageName,
+                    Order = order,
+                    DependsOn = dependsOn,
+                    IsParallel = isParallel,
+                    Condition = condition,
+                    EstimatedDurationSec = 0
+                });
+
+            order++;
+        }
+
+        return stages;
     }
 
-    private List<PipelineStage> ParseAzurePipelines(
-        PipelineFile pipelineFile)
+    // Jenkins Helpers
+
+    private static string ExtractJenkinsStageName(
+        string line)
     {
-        // Azure parser will be added next.
-        return new List<PipelineStage>();
+        // stage('Build')
+        var firstSingleQuote = line.IndexOf('\'');
+
+        if (firstSingleQuote >= 0)
+        {
+            var secondSingleQuote = line.IndexOf(
+                '\'',
+                firstSingleQuote + 1);
+
+            if (secondSingleQuote > firstSingleQuote)
+            {
+                return line.Substring(
+                    firstSingleQuote + 1,
+                    secondSingleQuote -
+                    firstSingleQuote -
+                    1);
+            }
+        }
+
+        // stage("Build")
+        var firstDoubleQuote = line.IndexOf('"');
+
+        if (firstDoubleQuote >= 0)
+        {
+            var secondDoubleQuote = line.IndexOf(
+                '"',
+                firstDoubleQuote + 1);
+
+            if (secondDoubleQuote > firstDoubleQuote)
+            {
+                return line.Substring(
+                    firstDoubleQuote + 1,
+                    secondDoubleQuote -
+                    firstDoubleQuote -
+                    1);
+            }
+        }
+
+        return string.Empty;
     }
 
-    private List<PipelineStage> ParseCircleCi(
-        PipelineFile pipelineFile)
+
+    private static int FindJenkinsStageBlockEnd(
+        string[] lines,
+        int stageLineIndex)
     {
-        // CircleCI parser will be added next.
-        return new List<PipelineStage>();
+        var braceCount = 0;
+        var started = false;
+
+        for (var i = stageLineIndex;
+             i < lines.Length;
+             i++)
+        {
+            var line = lines[i];
+
+            foreach (var character in line)
+            {
+                if (character == '{')
+                {
+                    braceCount++;
+                    started = true;
+                }
+                else if (character == '}')
+                {
+                    braceCount--;
+                }
+            }
+
+            if (started && braceCount <= 0)
+            {
+                return i;
+            }
+        }
+
+        return lines.Length;
     }
 
-    private List<PipelineStage> ParseBitbucketPipelines(
-        PipelineFile pipelineFile)
+
+    private static string FindJenkinsCondition(
+        string[] lines,
+        int whenLineIndex,
+        int blockEnd)
     {
-        // Bitbucket parser will be added next.
-        return new List<PipelineStage>();
+        for (var i = whenLineIndex + 1;
+             i < blockEnd;
+             i++)
+        {
+            var line = lines[i].Trim();
+
+            if (line.StartsWith("branch"))
+            {
+                return line;
+            }
+
+            if (line.StartsWith("environment"))
+            {
+                return line;
+            }
+
+            if (line.StartsWith("expression"))
+            {
+                return line;
+            }
+
+            if (line.StartsWith("anyOf"))
+            {
+                return "anyOf";
+            }
+
+            if (line.StartsWith("allOf"))
+            {
+                return "allOf";
+            }
+
+            if (line.StartsWith("not"))
+            {
+                return "not";
+            }
+        }
+
+        return "when";
     }
+
+    // YAML Helper
 
     private static string ConvertYamlValueToString(
         YamlNode node)
