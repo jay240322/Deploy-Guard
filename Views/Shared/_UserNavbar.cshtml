@@ -1,10 +1,21 @@
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+@{
+    var currentCtrl = ViewContext.RouteData.Values["Controller"]?.ToString() ?? "";
+    var currentAct = ViewContext.RouteData.Values["Action"]?.ToString() ?? "";
+
+    var isHome = currentCtrl.Equals("Home", StringComparison.OrdinalIgnoreCase) &&
+                 (currentAct.Equals("Index", StringComparison.OrdinalIgnoreCase) || currentAct.Equals("Dashboard", StringComparison.OrdinalIgnoreCase));
+    var isRepository = currentCtrl.Equals("Repository", StringComparison.OrdinalIgnoreCase);
+    var isScan = currentCtrl.Equals("Scan", StringComparison.OrdinalIgnoreCase);
+}
+
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow sticky-top mb-3 py-2">
 
     <div class="container-fluid">
 
-        <a class="navbar-brand fw-bold"
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2"
            asp-controller="Home"
            asp-action="Index">
+            <i class="bi bi-shield-lock-fill text-primary"></i>
             DeployGuard
         </a>
 
@@ -24,39 +35,49 @@
 
             <ul class="navbar-nav me-auto">
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       asp-controller="Home"
-                       asp-action="Index">
-                        Home
-                    </a>
-                </li>
+                @if (!isHome)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-controller="Home"
+                           asp-action="Index">
+                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                        </a>
+                    </li>
+                }
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                       asp-controller="Home"
-                       asp-action="Index">
-                        Dashboard
-                    </a>
-                </li>
+                @if (!isRepository)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-controller="Repository"
+                           asp-action="Index">
+                            <i class="bi bi-folder me-1"></i> Repositories
+                        </a>
+                    </li>
+                }
 
-                <li class="nav-item">
-                    <a class="nav-link"
-                    asp-controller="Repository"
-                    asp-action="Index">
-                        Repositories
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        Scan History
-                    </a>
-                </li>
+                @if (!isScan)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link"
+                           asp-controller="Scan"
+                           asp-action="History">
+                            <i class="bi bi-shield-check me-1"></i> Scan History
+                        </a>
+                    </li>
+                }
 
             </ul>
 
-            <ul class="navbar-nav">
+            <ul class="navbar-nav align-items-center gap-2">
+
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <li class="nav-item text-light small d-none d-md-inline me-2">
+                        <span class="text-muted"><i class="bi bi-person-circle me-1"></i></span> @User.Identity.Name
+                    </li>
+                }
 
                 <li class="nav-item">
 
@@ -67,8 +88,8 @@
                         @Html.AntiForgeryToken()
 
                         <button type="submit"
-                                class="btn btn-link nav-link">
-                            Logout
+                                class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right me-1"></i> Logout
                         </button>
 
                     </form>

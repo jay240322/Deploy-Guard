@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -12,6 +12,9 @@
           href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 
     <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet"
           href="~/css/site.css"
           asp-append-version="true" />
 
@@ -22,22 +25,31 @@
 
 <body>
 
-<header>
+@{
+    var currentCtrl = ViewContext.RouteData.Values["Controller"]?.ToString() ?? "";
+    var currentAct = ViewContext.RouteData.Values["Action"]?.ToString() ?? "";
+    var hideNav = (ViewData["HideNavbar"] as bool? == true)
+                  || currentCtrl.Equals("Account", StringComparison.OrdinalIgnoreCase)
+                  || (currentCtrl.Equals("Admin", StringComparison.OrdinalIgnoreCase) && currentAct.Equals("Login", StringComparison.OrdinalIgnoreCase));
+}
 
-    @if (User.Identity?.IsAuthenticated != true)
-    {
-        <partial name="_GuestNavbar" />
-    }
-    else if (User.IsInRole("Admin"))
-    {
-        <partial name="_AdminNavbar" />
-    }
-    else
-    {
-        <partial name="_UserNavbar" />
-    }
-
-</header>
+@if (!hideNav)
+{
+    <header class="sticky-top">
+        @if (User.Identity?.IsAuthenticated != true)
+        {
+            <partial name="_GuestNavbar" />
+        }
+        else if (User.IsInRole("Admin"))
+        {
+            <partial name="_AdminNavbar" />
+        }
+        else
+        {
+            <partial name="_UserNavbar" />
+        }
+    </header>
+}
 
 <!-- PAGE CONTENT -->
 

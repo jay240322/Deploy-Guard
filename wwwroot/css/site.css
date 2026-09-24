@@ -19,6 +19,18 @@ html {
 
 body {
   margin-bottom: 60px;
+  background-color: #f8fafc;
+}
+
+/* Sticky Navbar Styles */
+header.sticky-top, nav.sticky-top {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1030 !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(33, 37, 41, 0.96) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12) !important;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
