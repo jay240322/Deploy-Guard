@@ -1,59 +1,393 @@
+@model Deployguard.Models.AdminDashboardViewModel
+
 @{
-    ViewData["Title"] = "Admin Access";
+    ViewData["Title"] = "Admin Dashboard";
 }
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow">
-                <div class="card-body p-4">
-                    <h2 class="text-center mb-4">
-                        Admin Access
-                    </h2>
+<div class="container py-4">
 
-                    <p class="text-muted text-center">
-                        Enter the administrator password to continue.
-                    </p>
+    <!-- Header -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">
+            <i class="bi bi-speedometer2 me-2"></i>
+            Admin Dashboard
+        </h2>
 
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger">
-                            @ViewBag.Error
-                        </div>
-                    }
+        <p class="text-muted mb-0">
+            Monitor DeployGuard users, repositories and security activity.
+        </p>
+    </div>
 
-                    <form asp-controller="Admin"
-                          asp-action="Index"
-                          method="post">
+    <!-- Statistics -->
+    <div class="row g-4 mb-4">
 
-                        @Html.AntiForgeryToken()
+        <!-- Users -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
 
-                        <div class="mb-3">
-                            <label class="form-label">
-                                Admin Password
-                            </label>
+                    <div class="d-flex justify-content-between align-items-center">
 
-                            <input type="password"
-                                   name="password"
-                                   class="form-control"
-                                   placeholder="Enter admin password"
-                                   required />
+                        <div>
+                            <p class="text-muted mb-1">
+                                Total Users
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                @Model.TotalUsers
+                            </h2>
                         </div>
 
-                        <button type="submit"
-                                class="btn btn-dark w-100">
-                            Enter Admin Panel
-                        </button>
-                    </form>
+                        <div class="fs-1 text-primary">
+                            <i class="bi bi-people"></i>
+                        </div>
 
-                    <div class="text-center mt-3">
-                        <a asp-controller="Home"
-                           asp-action="Index">
-                            Back to Home
-                        </a>
                     </div>
+
                 </div>
             </div>
         </div>
+
+        <!-- Repositories -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Repositories
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                @Model.TotalRepositories
+                            </h2>
+                        </div>
+
+                        <div class="fs-1 text-info">
+                            <i class="bi bi-folder"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Scans -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Security Scans
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                @Model.TotalScans
+                            </h2>
+                        </div>
+
+                        <div class="fs-1 text-success">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Secrets -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Secrets Found
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                @Model.TotalSecretsFound
+                            </h2>
+                        </div>
+
+                        <div class="fs-1 text-danger">
+                            <i class="bi bi-key"></i>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <div class="row g-4">
+
+        <!-- Recent Users -->
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-people me-2"></i>
+                        Recent Users
+                    </h5>
+
+                    @if (Model.RecentUsers.Count == 0)
+                    {
+                        <p class="text-muted">
+                            No users found.
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+
+                            <table class="table align-middle">
+
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    @foreach (var user in Model.RecentUsers)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                <strong>
+                                                    @user.FullName
+                                                </strong>
+
+                                                <div class="small text-muted">
+                                                    @user.UserName
+                                                </div>
+                                            </td>
+
+                                            <td>
+                                                @user.Email
+                                            </td>
+
+                                            <td>
+                                                @if (user.Role == "Admin")
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        Admin
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        User
+                                                    </span>
+                                                }
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Recent Repositories -->
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-folder me-2"></i>
+                        Recent Repositories
+                    </h5>
+
+                    @if (Model.RecentRepositories.Count == 0)
+                    {
+                        <p class="text-muted">
+                            No repositories found.
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+
+                            <table class="table align-middle">
+
+                                <thead>
+                                    <tr>
+                                        <th>Repository</th>
+                                        <th>Provider</th>
+                                        <th>Owner</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    @foreach (var repository in Model.RecentRepositories)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                <strong>
+                                                    @repository.Name
+                                                </strong>
+                                            </td>
+
+                                            <td>
+                                                @repository.Provider
+                                            </td>
+
+                                            <td>
+                                                @repository.CreatedByUser?.UserName
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Recent Scans -->
+        <div class="col-12">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-body">
+
+                    <h5 class="fw-bold mb-3">
+                        <i class="bi bi-shield-check me-2"></i>
+                        Recent Security Scans
+                    </h5>
+
+                    @if (Model.RecentScans.Count == 0)
+                    {
+                        <p class="text-muted">
+                            No security scans found.
+                        </p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+
+                            <table class="table align-middle">
+
+                                <thead>
+                                    <tr>
+                                        <th>Repository</th>
+                                        <th>User</th>
+                                        <th>Files</th>
+                                        <th>Secrets</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+
+                                    @foreach (var scan in Model.RecentScans)
+                                    {
+                                        <tr>
+
+                                            <td>
+                                                <strong>
+                                                    @scan.Repository?.Name
+                                                </strong>
+                                            </td>
+
+                                            <td>
+                                                @scan.TriggeredByUser?.UserName
+                                            </td>
+
+                                            <td>
+                                                @scan.FilesScanned
+                                            </td>
+
+                                            <td>
+                                                @scan.SecretsFound
+                                            </td>
+
+                                            <td>
+
+                                                @if (scan.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        Completed
+                                                    </span>
+                                                }
+                                                else if (scan.Status == "Failed")
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        Failed
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        @scan.Status
+                                                    </span>
+                                                }
+
+                                            </td>
+
+                                            <td>
+                                                @scan.StartedAt
+                                                    .ToLocalTime()
+                                                    .ToString("dd MMM yyyy, HH:mm")
+                                            </td>
+
+                                        </tr>
+                                    }
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
