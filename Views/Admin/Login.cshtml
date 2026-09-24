@@ -1,81 +1,159 @@
 @{
-    ViewData["Title"] = "Admin Login";
+    ViewData["Title"] = "Admin Portal Login - DeployGuard";
+    ViewData["HideNavbar"] = true;
+    ViewData["HideFooter"] = true;
 }
 
-<div class="container mt-5">
-
-    <div class="row justify-content-center">
-
-        <div class="col-md-5">
-
-            <div class="card shadow">
-
-                <div class="card-body p-4">
-
-                    <h2 class="text-center mb-4">
-                        <i class="bi bi-shield-lock me-2"></i>
-                        Admin Login
-                    </h2>
-
-                    <p class="text-center text-muted mb-4">
-                        Enter the DeployGuard administrator password.
-                    </p>
-
-                    @if (ViewBag.Error != null)
-                    {
-                        <div class="alert alert-danger">
-                            @ViewBag.Error
+<div class="admin-auth-wrapper min-vh-100 d-flex align-items-center justify-content-center py-2 px-3">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5" style="max-width: 520px;">
+                <div class="card admin-auth-card border-0 shadow-lg rounded-4 overflow-hidden">
+                    
+                    <!-- Header with Admin Logo -->
+                    <div class="admin-card-header text-center pt-4 pb-2 px-4">
+                        <div class="admin-shield-icon-wrapper mx-auto mb-2 d-flex align-items-center justify-content-center shadow-sm">
+                            <i class="bi bi-shield-lock-fill text-danger fs-3"></i>
                         </div>
-                    }
-
-                    <form asp-controller="Admin"
-                          asp-action="Login"
-                          method="post">
-
-                        @Html.AntiForgeryToken()
-
-                        <div class="mb-3">
-
-                            <label class="form-label">
-                                Admin Password
-                            </label>
-
-                            <input type="password"
-                                   name="password"
-                                   class="form-control"
-                                   placeholder="Enter admin password"
-                                   required />
-
-                        </div>
-
-                        <button type="submit"
-                                class="btn btn-dark w-100">
-
-                            <i class="bi bi-box-arrow-in-right me-1"></i>
-                            Login as Admin
-
-                        </button>
-
-                    </form>
-
-                    <div class="text-center mt-3">
-
-                        <a asp-controller="Account"
-                           asp-action="Login"
-                           class="text-decoration-none">
-
-                            Back to User Login
-
-                        </a>
-
+                        <h4 class="fw-bold text-dark mb-1">Admin Portal</h4>
+                        <p class="text-muted small mb-0" style="font-size: 0.85rem;">
+                            Sign in to access system administration & intelligence
+                        </p>
                     </div>
 
+                    <div class="card-body p-3 p-md-4 pt-2 bg-white">
+
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="alert alert-danger d-flex align-items-center gap-2 border-0 shadow-sm rounded-3 py-1 px-3 mb-2" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill fs-6 flex-shrink-0"></i>
+                                <div class="small fw-medium">@ViewBag.Error</div>
+                            </div>
+                        }
+
+                        <form asp-controller="Admin" asp-action="Login" method="post" autocomplete="off">
+                            @Html.AntiForgeryToken()
+
+                            <!-- Admin Password Input -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-dark mb-1">Master Administrator Password</label>
+                                <div class="input-group auth-input-group">
+                                    <span class="input-group-text bg-light border-end-0 text-muted ps-3">
+                                        <i class="bi bi-key-fill text-danger"></i>
+                                    </span>
+                                    <input type="password"
+                                           id="adminPassword"
+                                           name="password"
+                                           class="form-control border-start-0 border-end-0 ps-2"
+                                           placeholder="••••••••••••"
+                                           required
+                                           autofocus />
+                                    <button class="btn btn-light border border-start-0 text-muted pe-3 toggle-password-btn"
+                                            type="button"
+                                            onclick="togglePasswordVisibility('adminPassword', this)">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-dark admin-submit-btn w-100 py-2 fs-6 fw-semibold rounded-3 shadow-sm mb-2">
+                                <i class="bi bi-box-arrow-in-right me-1 text-danger"></i> Authenticate as Admin
+                            </button>
+                        </form>
+
+                        <!-- Back to User Login -->
+                        <div class="text-center mt-2 pt-2 border-top">
+                            <a asp-controller="Account"
+                               asp-action="Login"
+                               class="text-secondary small text-decoration-none d-inline-flex align-items-center gap-1 opacity-75 hover-opacity-100"
+                               style="font-size: 0.8rem;">
+                                <i class="bi bi-arrow-left"></i>
+                                <span>Return to User Login</span>
+                            </a>
+                        </div>
+
+                    </div>
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </div>
+
+<style>
+    body, html {
+        height: 100%;
+        background-color: #ffffff;
+    }
+
+    .admin-auth-wrapper {
+        min-height: 100vh;
+        background-color: #ffffff;
+    }
+
+    .admin-auth-card {
+        background: #ffffff;
+        box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.07), 0 0 15px rgba(0, 0, 0, 0.02) !important;
+        border: 1px solid rgba(226, 232, 240, 0.8) !important;
+    }
+
+    .admin-card-header {
+        background: #ffffff;
+    }
+
+    .admin-shield-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(220, 38, 38, 0.08);
+        border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+
+    .auth-input-group .form-control {
+        border-color: #e2e8f0;
+        font-size: 0.9rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .auth-input-group .input-group-text {
+        border-color: #e2e8f0;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .auth-input-group .form-control:focus {
+        border-color: #dc2626;
+        box-shadow: none;
+    }
+
+    .admin-submit-btn {
+        background: #0f172a;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding-top: 0.55rem;
+        padding-bottom: 0.55rem;
+        transition: all 0.25s ease;
+    }
+
+    .admin-submit-btn:hover {
+        background: #1e293b;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2) !important;
+    }
+</style>
+
+<script>
+    function togglePasswordVisibility(inputId, btn) {
+        var input = document.getElementById(inputId);
+        var icon = btn.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('bi-eye');
+            icon.classList.add('bi-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('bi-eye-slash');
+            icon.classList.add('bi-eye');
+        }
+    }
+</script>

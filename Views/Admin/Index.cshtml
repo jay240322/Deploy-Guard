@@ -7,15 +7,33 @@
 <div class="container py-4">
 
     <!-- Header -->
-    <div class="mb-4">
-        <h2 class="fw-bold mb-1">
-            <i class="bi bi-speedometer2 me-2"></i>
-            Admin Dashboard
-        </h2>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-speedometer2 me-2 text-danger"></i>
+                Admin Dashboard
+            </h2>
 
-        <p class="text-muted mb-0">
-            Monitor DeployGuard users, repositories and security activity.
-        </p>
+            <p class="text-muted mb-0">
+                Monitor DeployGuard users, repositories and security activity.
+            </p>
+        </div>
+
+        <div class="d-flex align-items-center gap-2">
+            <a asp-controller="Admin"
+               asp-action="Users"
+               class="btn btn-outline-primary d-flex align-items-center gap-1 shadow-sm">
+                <i class="bi bi-people"></i>
+                <span>Manage Users</span>
+            </a>
+
+            <a asp-controller="Admin"
+               asp-action="Report"
+               class="btn btn-danger text-white d-flex align-items-center gap-1 shadow-sm">
+                <i class="bi bi-file-earmark-bar-graph"></i>
+                <span>Security Reports & PDF</span>
+            </a>
+        </div>
     </div>
 
     <!-- Statistics -->
@@ -23,29 +41,31 @@
 
         <!-- Users -->
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
+            <a asp-controller="Admin" asp-action="Users" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 hover-card">
+                    <div class="card-body">
 
-                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
 
-                        <div>
-                            <p class="text-muted mb-1">
-                                Total Users
-                            </p>
+                            <div>
+                                <p class="text-muted mb-1">
+                                    Total Users
+                                </p>
 
-                            <h2 class="fw-bold mb-0">
-                                @Model.TotalUsers
-                            </h2>
-                        </div>
+                                <h2 class="fw-bold mb-0 text-dark">
+                                    @Model.TotalUsers
+                                </h2>
+                            </div>
 
-                        <div class="fs-1 text-primary">
-                            <i class="bi bi-people"></i>
+                            <div class="fs-1 text-primary">
+                                <i class="bi bi-people"></i>
+                            </div>
+
                         </div>
 
                     </div>
-
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Repositories -->
@@ -77,56 +97,60 @@
 
         <!-- Scans -->
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
+            <a asp-controller="Admin" asp-action="Report" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 hover-card">
+                    <div class="card-body">
 
-                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
 
-                        <div>
-                            <p class="text-muted mb-1">
-                                Security Scans
-                            </p>
+                            <div>
+                                <p class="text-muted mb-1">
+                                    Security Scans
+                                </p>
 
-                            <h2 class="fw-bold mb-0">
-                                @Model.TotalScans
-                            </h2>
-                        </div>
+                                <h2 class="fw-bold mb-0 text-dark">
+                                    @Model.TotalScans
+                                </h2>
+                            </div>
 
-                        <div class="fs-1 text-success">
-                            <i class="bi bi-shield-check"></i>
+                            <div class="fs-1 text-success">
+                                <i class="bi bi-shield-check"></i>
+                            </div>
+
                         </div>
 
                     </div>
-
                 </div>
-            </div>
+            </a>
         </div>
 
         <!-- Secrets -->
         <div class="col-md-6 col-lg-3">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body">
+            <a asp-controller="Admin" asp-action="Report" class="text-decoration-none">
+                <div class="card border-0 shadow-sm h-100 hover-card">
+                    <div class="card-body">
 
-                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
 
-                        <div>
-                            <p class="text-muted mb-1">
-                                Secrets Found
-                            </p>
+                            <div>
+                                <p class="text-muted mb-1">
+                                    Secrets Found
+                                </p>
 
-                            <h2 class="fw-bold mb-0">
-                                @Model.TotalSecretsFound
-                            </h2>
-                        </div>
+                                <h2 class="fw-bold mb-0 @(Model.TotalSecretsFound > 0 ? "text-danger" : "text-dark")">
+                                    @Model.TotalSecretsFound
+                                </h2>
+                            </div>
 
-                        <div class="fs-1 text-danger">
-                            <i class="bi bi-key"></i>
+                            <div class="fs-1 text-danger">
+                                <i class="bi bi-key"></i>
+                            </div>
+
                         </div>
 
                     </div>
-
                 </div>
-            </div>
+            </a>
         </div>
 
     </div>

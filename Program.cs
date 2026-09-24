@@ -51,6 +51,7 @@ builder.Services.AddScoped<PipelineDetectionService>();
 // Report services
 builder.Services.AddScoped<ReportService>();
 builder.Services.AddScoped<PdfReportService>();
+builder.Services.AddScoped<AdminPdfReportService>();
 
 // Git providers
 builder.Services.AddScoped<IGitProvider, GitHubProvider>();

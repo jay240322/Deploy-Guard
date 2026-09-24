@@ -1,0 +1,467 @@
+@model Deployguard.Models.AdminReportViewModel
+
+@{
+    ViewData["Title"] = "Platform Security & Usage Report";
+}
+
+<div class="py-4">
+
+    <!-- Header & Actions -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-danger text-white px-2 py-1">
+                    <i class="bi bi-shield-check me-1"></i> Executive Intelligence
+                </span>
+                <h2 class="fw-bold mb-0">Platform Security & Usage Report</h2>
+            </div>
+            <p class="text-muted mb-0">
+                <i class="bi bi-clock-history me-1"></i> Live generated at <strong>@Model.GeneratedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm:ss")</strong> (auto-refreshed on page visit).
+            </p>
+        </div>
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <!-- Refresh Report -->
+            <a asp-controller="Admin"
+               asp-action="Report"
+               class="btn btn-outline-secondary d-flex align-items-center gap-1 shadow-sm">
+                <i class="bi bi-arrow-clockwise"></i>
+                <span>Refresh Live</span>
+            </a>
+
+            <!-- Export as PDF Button -->
+            <a asp-controller="Admin"
+               asp-action="ExportReportPdf"
+               class="btn btn-danger text-white fw-semibold d-flex align-items-center gap-2 shadow-sm px-3">
+                <i class="bi bi-file-earmark-pdf-fill fs-5"></i>
+                <span>Export as PDF</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- 1. Platform Overview KPIs -->
+    <div class="row g-3 mb-4">
+        <!-- Total Users -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-medium">Registered Users</div>
+                        <div class="fs-3 fw-bold text-dark">@Model.TotalUsers</div>
+                        <small class="text-muted">Platform accounts</small>
+                    </div>
+                    <div class="p-3 bg-primary-subtle text-primary rounded-3">
+                        <i class="bi bi-people fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Repositories -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-medium">Active Repositories</div>
+                        <div class="fs-3 fw-bold text-dark">@Model.TotalRepositories</div>
+                        <small class="text-muted">Connected codebases</small>
+                    </div>
+                    <div class="p-3 bg-info-subtle text-info rounded-3">
+                        <i class="bi bi-folder2-open fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Scans -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-medium">Total Scans Executed</div>
+                        <div class="fs-3 fw-bold text-dark">@Model.TotalScans</div>
+                        <small class="text-muted">Security audits</small>
+                    </div>
+                    <div class="p-3 bg-success-subtle text-success rounded-3">
+                        <i class="bi bi-shield-check fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secrets Found -->
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 rounded-3">
+                <div class="card-body p-3 d-flex align-items-center justify-content-between">
+                    <div>
+                        <div class="text-muted small fw-medium">Secrets Detected</div>
+                        <div class="fs-3 fw-bold @(Model.TotalSecretsFound > 0 ? "text-danger" : "text-success")">
+                            @Model.TotalSecretsFound
+                        </div>
+                        <small class="text-muted">Policy violations</small>
+                    </div>
+                    <div class="p-3 @(Model.TotalSecretsFound > 0 ? "bg-danger-subtle text-danger" : "bg-success-subtle text-success") rounded-3">
+                        <i class="bi bi-key-fill fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Scan Usage & Performance Analytics -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
+        <div class="card-header bg-white border-bottom py-3 px-4">
+            <div class="d-flex align-items-center justify-content-between">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-activity text-primary"></i>
+                    Scan Usage & Execution Analytics
+                </h5>
+                <span class="badge bg-light text-muted border">
+                    <i class="bi bi-speedometer2 me-1"></i> Performance Tracking
+                </span>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Total Scan Time -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="p-3 border rounded-3 bg-light">
+                        <div class="text-muted small fw-medium mb-1">
+                            <i class="bi bi-stopwatch me-1"></i> Total Scan Time Used
+                        </div>
+                        <div class="fs-4 fw-bold text-dark">
+                            @if (Model.TotalScanDurationSeconds < 60)
+                            {
+                                <span>@Model.TotalScanDurationSeconds.ToString("F1")s</span>
+                            }
+                            else
+                            {
+                                <span>@((int)(Model.TotalScanDurationSeconds / 60))m @((int)(Model.TotalScanDurationSeconds % 60))s</span>
+                            }
+                        </div>
+                        <small class="text-muted">Cumulative scan processing</small>
+                    </div>
+                </div>
+
+                <!-- Average Duration -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="p-3 border rounded-3 bg-light">
+                        <div class="text-muted small fw-medium mb-1">
+                            <i class="bi bi-clock me-1"></i> Avg Scan Duration
+                        </div>
+                        <div class="fs-4 fw-bold text-dark">
+                            @Model.AverageScanDurationSeconds.ToString("F1") sec
+                        </div>
+                        <small class="text-muted">Per executed repository scan</small>
+                    </div>
+                </div>
+
+                <!-- Files Scanned -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="p-3 border rounded-3 bg-light">
+                        <div class="text-muted small fw-medium mb-1">
+                            <i class="bi bi-file-earmark-code me-1"></i> Total Files Scanned
+                        </div>
+                        <div class="fs-4 fw-bold text-dark">
+                            @Model.TotalFilesScanned.ToString("N0")
+                        </div>
+                        <small class="text-muted">Source & config files inspected</small>
+                    </div>
+                </div>
+
+                <!-- Scan Status Breakdown -->
+                <div class="col-sm-6 col-lg-3">
+                    <div class="p-3 border rounded-3 bg-light">
+                        <div class="text-muted small fw-medium mb-1">
+                            <i class="bi bi-check2-circle me-1"></i> Scan Success Rate
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                <i class="bi bi-check"></i> @Model.CompletedScansCount Done
+                            </span>
+                            @if (Model.FailedScansCount > 0)
+                            {
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1">
+                                    <i class="bi bi-x"></i> @Model.FailedScansCount Failed
+                                </span>
+                            }
+                            @if (Model.RunningScansCount > 0)
+                            {
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-2 py-1">
+                                    <i class="bi bi-hourglass-split"></i> @Model.RunningScansCount Running
+                                </span>
+                            }
+                        </div>
+                        <small class="text-muted d-block mt-1">Status distribution</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Severity Distribution Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 rounded-3 border-start border-danger border-4">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase">Critical Vulnerabilities</div>
+                            <div class="fs-3 fw-bold text-danger">@Model.CriticalSecretsCount</div>
+                        </div>
+                        <span class="badge bg-danger fs-6 px-2 py-1">CRITICAL</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 rounded-3 border-start border-warning border-4">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase">High Vulnerabilities</div>
+                            <div class="fs-3 fw-bold text-warning-emphasis">@Model.HighSecretsCount</div>
+                        </div>
+                        <span class="badge bg-warning text-dark fs-6 px-2 py-1">HIGH</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 rounded-3 border-start border-info border-4">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase">Medium Vulnerabilities</div>
+                            <div class="fs-3 fw-bold text-info">@Model.MediumSecretsCount</div>
+                        </div>
+                        <span class="badge bg-info text-dark fs-6 px-2 py-1">MEDIUM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-6 col-lg-3">
+            <div class="card border-0 shadow-sm h-100 rounded-3 border-start border-secondary border-4">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-muted small fw-semibold text-uppercase">Low Vulnerabilities</div>
+                            <div class="fs-3 fw-bold text-secondary">@Model.LowSecretsCount</div>
+                        </div>
+                        <span class="badge bg-secondary fs-6 px-2 py-1">LOW</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Most Risky Repositories (Ranked Table) -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
+        <div class="card-header bg-white border-bottom py-3 px-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+                <div>
+                    <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                        <i class="bi bi-shield-exclamation text-danger"></i>
+                        Most Risky Repositories
+                    </h5>
+                    <small class="text-muted">Repositories ranked by threat severity score and total secret leakages.</small>
+                </div>
+                <div class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2">
+                    <i class="bi bi-sort-down me-1"></i> Ranked by Risk Score
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-0">
+            @if (!Model.RiskyRepositories.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-shield-check fs-1 text-success"></i>
+                    <h5 class="fw-bold mt-3">No Repository Data Available</h5>
+                    <p class="text-muted mb-0">No repositories have been registered or scanned yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Rank & Repository</th>
+                                <th>Provider</th>
+                                <th>Owner / User</th>
+                                <th>Risk Score</th>
+                                <th>Risk Level</th>
+                                <th>Secrets (Crit / High / Med / Low)</th>
+                                <th>Last Scanned</th>
+                                <th class="text-end pe-4">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ var rank = 1; }
+                            @foreach (var repo in Model.RiskyRepositories)
+                            {
+                                <tr>
+                                    <td class="ps-4">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge rounded-circle @(rank <= 3 && repo.RiskScore > 0 ? "bg-danger text-white" : "bg-light text-muted border")"
+                                                  style="width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center;">
+                                                @rank
+                                            </span>
+                                            <div>
+                                                <div class="fw-bold text-dark">@repo.RepositoryName</div>
+                                                <a href="@repo.RepoUrl" target="_blank" rel="noopener noreferrer" class="small text-muted text-decoration-none">
+                                                    <i class="bi bi-box-arrow-up-right me-1"></i>@repo.RepoUrl
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-secondary-subtle text-secondary border">
+                                            @repo.Provider
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="small fw-semibold text-dark">
+                                            @(string.IsNullOrEmpty(repo.Owner) ? repo.CreatedByUserName : repo.Owner)
+                                        </div>
+                                        <div class="small text-muted">by @repo.CreatedByUserName</div>
+                                    </td>
+                                    <td>
+                                        <span class="fs-6 fw-bold @(repo.RiskScore >= 20 ? "text-danger" : repo.RiskScore >= 10 ? "text-warning" : "text-dark")">
+                                            @repo.RiskScore
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (repo.RiskLevel == "Critical Risk")
+                                        {
+                                            <span class="badge bg-danger text-white px-2 py-1">
+                                                <i class="bi bi-exclamation-octagon-fill me-1"></i> Critical Risk
+                                            </span>
+                                        }
+                                        else if (repo.RiskLevel == "High Risk")
+                                        {
+                                            <span class="badge bg-warning text-dark px-2 py-1">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i> High Risk
+                                            </span>
+                                        }
+                                        else if (repo.RiskLevel == "Moderate Risk")
+                                        {
+                                            <span class="badge bg-info text-dark px-2 py-1">
+                                                <i class="bi bi-info-circle-fill me-1"></i> Moderate Risk
+                                            </span>
+                                        }
+                                        else if (repo.RiskLevel == "Low Risk")
+                                        {
+                                            <span class="badge bg-secondary-subtle text-secondary border px-2 py-1">
+                                                Low Risk
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                                                <i class="bi bi-check-circle-fill me-1"></i> Clean
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="fw-bold me-2">@repo.TotalSecrets</span>
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">@repo.CriticalCount</span>
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle">@repo.HighCount</span>
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle">@repo.MediumCount</span>
+                                        <span class="badge bg-light text-muted border">@repo.LowCount</span>
+                                    </td>
+                                    <td>
+                                        @if (repo.LastScannedAt.HasValue)
+                                        {
+                                            <span class="small text-muted">
+                                                @repo.LastScannedAt.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-light text-muted border">Never Scanned</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <a asp-controller="Repository"
+                                           asp-action="Details"
+                                           asp-route-id="@repo.RepositoryId"
+                                           class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-1">
+                                            <i class="bi bi-eye"></i>
+                                            <span>Details</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                rank++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- 5. Top Detected Secret Violations -->
+    @if (Model.TopSecretTypes.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+            <div class="card-header bg-white border-bottom py-3 px-4">
+                <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                    <i class="bi bi-bug text-warning"></i>
+                    Top Detected Secret Rule Violations
+                </h5>
+            </div>
+
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Rule Name</th>
+                                <th>Severity</th>
+                                <th class="text-end pe-4">Total Findings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var type in Model.TopSecretTypes)
+                            {
+                                <tr>
+                                    <td class="ps-4 fw-medium text-dark">
+                                        <i class="bi bi-shield-x me-2 text-danger"></i> @type.RuleName
+                                    </td>
+                                    <td>
+                                        @if (type.Severity == "Critical")
+                                        {
+                                            <span class="badge bg-danger">Critical</span>
+                                        }
+                                        else if (type.Severity == "High")
+                                        {
+                                            <span class="badge bg-warning text-dark">High</span>
+                                        }
+                                        else if (type.Severity == "Medium")
+                                        {
+                                            <span class="badge bg-info text-dark">Medium</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Low</span>
+                                        }
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge bg-dark fs-6 px-3 py-1">@type.Count</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>

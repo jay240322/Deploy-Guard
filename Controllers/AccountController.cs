@@ -136,7 +136,6 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(
@@ -145,9 +144,76 @@ public class AccountController : Controller
         return RedirectToAction("Index", "Home");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
+    {
+        if (request == null || string.IsNullOrWhiteSpace(request.Email))
+        {
+            return Json(new { success = false, message = "Email is required for Google sign-in." });
+        }
+
+        var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == request.Email);
+        if (user == null)
+        {
+            var baseUsername = request.Email.Split('@')[0].Replace(".", "_").ToLower();
+            var username = baseUsername;
+            int count = 1;
+            while (await _context.AppUsers.AnyAsync(u => u.UserName == username))
+            {
+                username = $"{baseUsername}{count++}";
+            }
+
+            user = new AppUser
+            {
+                UserName = username,
+                Email = request.Email,
+                FullName = string.IsNullOrWhiteSpace(request.FullName) ? username : request.FullName,
+                Role = "User",
+                IsActive = true,
+                CreatedAt = DateTime.UtcNow
+            };
+            user.PasswordHash = _passwordHasher.HashPassword(user, Guid.NewGuid().ToString("N"));
+
+            _context.AppUsers.Add(user);
+            await _context.SaveChangesAsync();
+        }
+
+        if (!user.IsActive)
+        {
+            return Json(new { success = false, message = "This account is inactive. Please contact an administrator." });
+        }
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role)
+        };
+
+        var identity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme);
+
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            principal);
+
+        return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
+    }
+
     [HttpGet]
     public IActionResult AccessDenied()
     {
         return View();
     }
+}
+
+public class GoogleLoginRequest
+{
+    public string? Email { get; set; }
+    public string? FullName { get; set; }
+    public string? GoogleUid { get; set; }
 }
