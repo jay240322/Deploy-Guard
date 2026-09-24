@@ -1,3 +1,328 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model Deployguard.Models.UserDashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
 }
+
+<div class="container py-4">
+
+    <!-- Welcome -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">
+            Welcome back, @(string.IsNullOrWhiteSpace(Model.FullName)
+                ? Model.UserName
+                : Model.FullName) 👋
+        </h2>
+
+        <p class="text-muted mb-0">
+            Monitor your repositories, security scans and CI/CD pipelines.
+        </p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row g-4 mb-4">
+
+        <!-- Repositories -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Repositories
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                @Model.RepositoryCount
+                            </h2>
+                        </div>
+
+                        <div class="fs-1 text-primary">
+                            <i class="bi bi-folder"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scans -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Security Scans
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                @Model.ScanCount
+                            </h2>
+                        </div>
+
+                        <div class="fs-1 text-success">
+                            <i class="bi bi-shield-check"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secrets -->
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <p class="text-muted mb-1">
+                                Secrets Found
+                            </p>
+
+                            <h2 class="fw-bold mb-0">
+                                @Model.SecretsFound
+                            </h2>
+                        </div>
+
+                        <div class="fs-1 text-danger">
+                            <i class="bi bi-key"></i>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+
+            <h5 class="fw-bold mb-3">
+                Quick Actions
+            </h5>
+
+            <div class="d-flex flex-wrap gap-2">
+
+                <a asp-controller="Repository"
+                   asp-action="Create"
+                   class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>
+                    Add Repository
+                </a>
+
+                <a asp-controller="Repository"
+                   asp-action="Index"
+                   class="btn btn-outline-primary">
+                    <i class="bi bi-folder2-open me-1"></i>
+                    My Repositories
+                </a>
+
+                <a asp-controller="Scan"
+                   asp-action="History"
+                   class="btn btn-outline-success">
+                    <i class="bi bi-clock-history me-1"></i>
+                    Scan History
+                </a>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Recent Repositories -->
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <h5 class="fw-bold mb-0">
+                            Recent Repositories
+                        </h5>
+
+                        <a asp-controller="Repository"
+                           asp-action="Index"
+                           class="small text-decoration-none">
+                            View All
+                        </a>
+
+                    </div>
+
+                    @if (Model.RecentRepositories.Count == 0)
+                    {
+                        <div class="text-center py-4">
+
+                            <i class="bi bi-folder-x fs-1 text-muted"></i>
+
+                            <p class="text-muted mt-2 mb-3">
+                                You haven't added any repositories yet.
+                            </p>
+
+                            <a asp-controller="Repository"
+                               asp-action="Create"
+                               class="btn btn-primary btn-sm">
+                                Add Repository
+                            </a>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+
+                            @foreach (var repository in Model.RecentRepositories)
+                            {
+                                <div class="list-group-item px-0">
+
+                                    <div class="d-flex justify-content-between align-items-center">
+
+                                        <div>
+                                            <a asp-controller="Repository"
+                                               asp-action="Details"
+                                               asp-route-id="@repository.Id"
+                                               class="fw-semibold text-decoration-none">
+                                                @repository.Name
+                                            </a>
+
+                                            <div class="small text-muted">
+                                                @repository.Provider
+                                            </div>
+                                        </div>
+
+                                        <a asp-controller="Repository"
+                                           asp-action="Details"
+                                           asp-route-id="@repository.Id"
+                                           class="btn btn-sm btn-outline-secondary">
+                                            View
+                                        </a>
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Recent Scans -->
+        <div class="col-lg-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+                        <h5 class="fw-bold mb-0">
+                            Recent Scans
+                        </h5>
+
+                        <a asp-controller="Scan"
+                           asp-action="History"
+                           class="small text-decoration-none">
+                            View All
+                        </a>
+
+                    </div>
+
+                    @if (Model.RecentScans.Count == 0)
+                    {
+                        <div class="text-center py-4">
+
+                            <i class="bi bi-shield-x fs-1 text-muted"></i>
+
+                            <p class="text-muted mt-2 mb-0">
+                                No security scans have been performed yet.
+                            </p>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="list-group list-group-flush">
+
+                            @foreach (var scan in Model.RecentScans)
+                            {
+                                <div class="list-group-item px-0">
+
+                                    <div class="d-flex justify-content-between align-items-center">
+
+                                        <div>
+
+                                            <a asp-controller="Scan"
+                                               asp-action="Details"
+                                               asp-route-id="@scan.Id"
+                                               class="fw-semibold text-decoration-none">
+
+                                                @(scan.Repository?.Name ?? "Unknown Repository")
+
+                                            </a>
+
+                                            <div class="small text-muted">
+
+                                                @scan.StartedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+
+                                            </div>
+
+                                        </div>
+
+                                        <div class="text-end">
+
+                                            @if (scan.Status == "Completed")
+                                            {
+                                                <span class="badge bg-success">
+                                                    Completed
+                                                </span>
+                                            }
+                                            else if (scan.Status == "Failed")
+                                            {
+                                                <span class="badge bg-danger">
+                                                    Failed
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">
+                                                    @scan.Status
+                                                </span>
+                                            }
+
+                                            <div class="small text-muted mt-1">
+                                                @scan.SecretsFound secret(s)
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            }
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
