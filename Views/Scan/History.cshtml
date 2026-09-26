@@ -174,13 +174,14 @@
                                 <td>
                                     @if (scan.Repository != null)
                                     {
-                                        <div class="fw-semibold">
-                                            @scan.Repository.Name
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="fs-6" title="@scan.Repository.Provider">
+                                                <partial name="_ProviderIcon" model="scan.Repository.Provider" />
+                                            </span>
+                                            <span class="fw-semibold">
+                                                @scan.Repository.Name
+                                            </span>
                                         </div>
-
-                                        <small class="text-muted">
-                                            @scan.Repository.Provider
-                                        </small>
                                     }
                                     else
                                     {
@@ -269,15 +270,11 @@
                                     @if (scan.CompletedAt.HasValue)
                                     {
                                         <div>
-                                            @scan.CompletedAt.Value
-                                                .ToLocalTime()
-                                                .ToString("dd MMM yyyy")
+                                            @scan.CompletedAt.Value.ToLocalTime().ToString("dd MMM yyyy")
                                         </div>
 
                                         <small class="text-muted">
-                                            @scan.CompletedAt.Value
-                                                .ToLocalTime()
-                                                .ToString("hh:mm tt")
+                                            @scan.CompletedAt.Value.ToLocalTime().ToString("hh:mm tt")
                                         </small>
                                     }
                                     else

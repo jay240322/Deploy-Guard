@@ -1,0 +1,26 @@
+@model string
+
+@{
+    var provider = Model ?? string.Empty;
+}
+
+@if (provider.Equals("GitHub", StringComparison.OrdinalIgnoreCase))
+{
+    <i class="bi bi-github" title="GitHub" aria-label="GitHub"></i>
+}
+else if (provider.Equals("GitLab", StringComparison.OrdinalIgnoreCase))
+{
+    <i class="bi bi-gitlab text-warning" title="GitLab" aria-label="GitLab"></i>
+}
+else if (provider.Contains("Azure", StringComparison.OrdinalIgnoreCase))
+{
+    <i class="bi bi-microsoft text-primary" title="Azure DevOps" aria-label="Azure DevOps"></i>
+}
+else if (provider.Contains("Bitbucket", StringComparison.OrdinalIgnoreCase))
+{
+    <i class="bi bi-git text-primary" title="Bitbucket" aria-label="Bitbucket"></i>
+}
+else
+{
+    <i class="bi bi-git text-secondary" title="@provider" aria-label="@provider"></i>
+}

@@ -33,40 +33,34 @@
 
         <div class="collapse navbar-collapse" id="userNavbar">
 
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav me-auto gap-1">
 
-                @if (!isHome)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           asp-controller="Home"
-                           asp-action="Index">
-                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
-                        </a>
-                    </li>
-                }
+                <li class="nav-item">
+                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isHome ? "active-nav-link" : "")"
+                       asp-controller="Home"
+                       asp-action="Index">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
 
-                @if (!isRepository)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           asp-controller="Repository"
-                           asp-action="Index">
-                            <i class="bi bi-folder me-1"></i> Repositories
-                        </a>
-                    </li>
-                }
+                <li class="nav-item">
+                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isRepository ? "active-nav-link" : "")"
+                       asp-controller="Repository"
+                       asp-action="Index">
+                        <i class="bi bi-folder"></i>
+                        <span>Repositories</span>
+                    </a>
+                </li>
 
-                @if (!isScan)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           asp-controller="Scan"
-                           asp-action="History">
-                            <i class="bi bi-shield-check me-1"></i> Scan History
-                        </a>
-                    </li>
-                }
+                <li class="nav-item">
+                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isScan ? "active-nav-link" : "")"
+                       asp-controller="Scan"
+                       asp-action="History">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Scan History</span>
+                    </a>
+                </li>
 
             </ul>
 
@@ -74,14 +68,15 @@
 
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <li class="nav-item text-light small d-none d-md-inline me-2">
-                        <span class="text-muted"><i class="bi bi-person-circle me-1"></i></span> @User.Identity.Name
+                    <li class="nav-item text-light d-flex align-items-center gap-1 me-2 px-2 py-1 user-profile-badge">
+                        <i class="bi bi-person-circle fs-5 text-primary"></i>
+                        <span class="fw-medium">@User.Identity.Name</span>
                     </li>
                 }
 
                 <li class="nav-item">
                     <button type="button"
-                            class="btn btn-outline-danger btn-sm"
+                            class="btn btn-outline-danger btn-sm px-3"
                             data-bs-toggle="modal"
                             data-bs-target="#logoutConfirmModal">
                         <i class="bi bi-box-arrow-right me-1"></i> Logout

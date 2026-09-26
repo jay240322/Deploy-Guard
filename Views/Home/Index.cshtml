@@ -1,10 +1,10 @@
-﻿@model Deployguard.Models.UserDashboardViewModel
+@model Deployguard.Models.UserDashboardViewModel
 
 @{
     ViewData["Title"] = "Dashboard";
 }
 
-<div class="container py-4">
+<div class="py-4">
 
     <!-- Welcome -->
     <div class="mb-4">
@@ -186,16 +186,21 @@
 
                                     <div class="d-flex justify-content-between align-items-center">
 
-                                        <div>
-                                            <a asp-controller="Repository"
-                                               asp-action="Details"
-                                               asp-route-id="@repository.Id"
-                                               class="fw-semibold text-decoration-none">
-                                                @repository.Name
-                                            </a>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="fs-5" title="@repository.Provider">
+                                                <partial name="_ProviderIcon" model="repository.Provider" />
+                                            </span>
+                                            <div>
+                                                <a asp-controller="Repository"
+                                                   asp-action="Details"
+                                                   asp-route-id="@repository.Id"
+                                                   class="fw-semibold text-decoration-none">
+                                                    @repository.Name
+                                                </a>
 
-                                            <div class="small text-muted">
-                                                @repository.Provider
+                                                <div class="small text-muted">
+                                                    @(string.IsNullOrEmpty(repository.Language) ? "Git Repository" : repository.Language)
+                                                </div>
                                             </div>
                                         </div>
 
@@ -282,30 +287,43 @@
 
                                         </div>
 
-                                        <div class="text-end">
+                                        <div class="d-flex align-items-center gap-3">
 
-                                            @if (scan.Status == "Completed")
-                                            {
-                                                <span class="badge bg-success">
-                                                    Completed
-                                                </span>
-                                            }
-                                            else if (scan.Status == "Failed")
-                                            {
-                                                <span class="badge bg-danger">
-                                                    Failed
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning text-dark">
-                                                    @scan.Status
-                                                </span>
-                                            }
+                                            <div class="text-end">
 
-                                            <div class="small text-muted mt-1">
-                                                @scan.SecretsFound secret(s)
+                                                @if (scan.Status == "Completed")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        Completed
+                                                    </span>
+                                                }
+                                                else if (scan.Status == "Failed")
+                                                {
+                                                    <span class="badge bg-danger">
+                                                        Failed
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning text-dark">
+                                                        @scan.Status
+                                                    </span>
+                                                }
+
+                                                <div class="small text-muted mt-1">
+                                                    @scan.SecretsFound secret(s)
+                                                </div>
+
                                             </div>
+
+                                            <a asp-controller="Scan"
+                                               asp-action="Details"
+                                               asp-route-id="@scan.Id"
+                                               class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center"
+                                               style="width: 32px; height: 32px;"
+                                               title="View Scan Details">
+                                                <i class="bi bi-chevron-right"></i>
+                                            </a>
 
                                         </div>
 

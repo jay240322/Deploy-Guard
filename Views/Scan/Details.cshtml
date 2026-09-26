@@ -192,9 +192,7 @@ else
                 </div>
 
                 <div class="mt-1">
-                    @Model.StartedAt
-                        .ToLocalTime()
-                        .ToString("dd MMM yyyy HH:mm")
+                    @Model.StartedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
                 </div>
             </div>
 

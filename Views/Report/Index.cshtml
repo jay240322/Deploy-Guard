@@ -456,8 +456,7 @@
                                 </td>
 
                                 <td>
-                                    @pipeline.DetectedAt
-                                        .ToLocalTime()
+                                    @pipeline.DetectedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
                                 </td>
 
                             </tr>
@@ -540,12 +539,7 @@
 
 <!-- Report Footer -->
 <div class="text-muted small text-end">
-
-    Report generated:
-
-    @Model.GeneratedAt
-        .ToLocalTime()
-
+    Report generated: @Model.GeneratedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
 </div>
 
 </div>

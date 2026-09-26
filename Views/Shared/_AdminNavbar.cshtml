@@ -35,40 +35,34 @@
 
         <div class="collapse navbar-collapse" id="adminNavbar">
 
-            <ul class="navbar-nav me-auto">
+            <ul class="navbar-nav me-auto gap-1">
 
-                @if (!isAdminDashboard)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           asp-controller="Admin"
-                           asp-action="Index">
-                            <i class="bi bi-speedometer2 me-1"></i> Dashboard
-                        </a>
-                    </li>
-                }
+                <li class="nav-item">
+                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isAdminDashboard ? "active-nav-link" : "")"
+                       asp-controller="Admin"
+                       asp-action="Index">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
 
-                @if (!isUsersPage)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           asp-controller="Admin"
-                           asp-action="Users">
-                            <i class="bi bi-people me-1"></i> Users
-                        </a>
-                    </li>
-                }
+                <li class="nav-item">
+                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isUsersPage ? "active-nav-link" : "")"
+                       asp-controller="Admin"
+                       asp-action="Users">
+                        <i class="bi bi-people"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
 
-                @if (!isReportPage)
-                {
-                    <li class="nav-item">
-                        <a class="nav-link"
-                           asp-controller="Admin"
-                           asp-action="Report">
-                            <i class="bi bi-activity me-1"></i> Scan Usage & Reports
-                        </a>
-                    </li>
-                }
+                <li class="nav-item">
+                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isReportPage ? "active-nav-link" : "")"
+                       asp-controller="Admin"
+                       asp-action="Report">
+                        <i class="bi bi-activity"></i>
+                        <span>Scan Usage & Reports</span>
+                    </a>
+                </li>
 
             </ul>
 
@@ -76,14 +70,18 @@
 
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <li class="nav-item text-light small d-none d-md-inline me-2">
-                        <span class="badge bg-danger me-1">ADMIN</span> @User.Identity.Name
+                    <li class="nav-item text-light d-flex align-items-center gap-2 me-2 px-2 py-1 user-profile-badge">
+                        <span class="badge bg-danger">ADMIN</span>
+                        <div class="d-flex align-items-center gap-1">
+                            <i class="bi bi-person-circle fs-5 text-danger-subtle"></i>
+                            <span class="fw-medium">@User.Identity.Name</span>
+                        </div>
                     </li>
                 }
 
                 <li class="nav-item">
                     <button type="button"
-                            class="btn btn-outline-danger btn-sm"
+                            class="btn btn-outline-danger btn-sm px-3"
                             data-bs-toggle="modal"
                             data-bs-target="#logoutConfirmModal">
                         <i class="bi bi-box-arrow-right me-1"></i> Logout

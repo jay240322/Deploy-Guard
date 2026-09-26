@@ -53,9 +53,14 @@ else
 
                     <div class="card-body">
 
-                        <h5 class="card-title">
-                            @repository.Name
-                        </h5>
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">
+                                @repository.Name
+                            </h5>
+                            <span class="fs-5" title="@repository.Provider">
+                                <partial name="_ProviderIcon" model="repository.Provider" />
+                            </span>
+                        </div>
 
                         <p class="text-muted small">
                             @repository.RepoUrl
@@ -63,9 +68,11 @@ else
 
                         <hr />
 
-                        <p class="mb-1">
+                        <p class="mb-1 d-flex align-items-center gap-2">
                             <strong>Provider:</strong>
-                            @repository.Provider
+                            <span class="fs-5">
+                                <partial name="_ProviderIcon" model="repository.Provider" />
+                            </span>
                         </p>
 
                         <p class="mb-1">
