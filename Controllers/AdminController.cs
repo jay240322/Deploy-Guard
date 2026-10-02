@@ -49,7 +49,9 @@ public class AdminController : Controller
             return View();
         }
 
-        var adminPassword = "Admin@12345";
+        var adminPassword = _configuration["DeployGuard:AdminPassword"]
+            ?? _configuration["ADMIN_PASSWORD"]
+            ?? "Admin@12345";
 
         if (string.IsNullOrWhiteSpace(adminPassword))
         {

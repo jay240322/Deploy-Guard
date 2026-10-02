@@ -1,7 +1,31 @@
-@"
+## Build and compiled output
 bin/
 obj/
+out/
+publish/
+
+## Visual Studio & IDE files
 .vs/
+.vscode/
 *.user
+*.userosscache
+*.sln.docstates
 *.suo
-"@ | Set-Content .gitignore
+
+## Sensitive Environment and Secret Files
+.env
+.env.*
+.env.local
+.env.development
+.env.production
+!.env.example
+appsettings.Production.json
+appsettings.*.local.json
+*.pem
+*.key
+*.pfx
+
+## Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
