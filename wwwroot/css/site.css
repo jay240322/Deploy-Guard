@@ -23,6 +23,9 @@
   --input-border: #cbd5e1;
   --navbar-bg: rgba(30, 35, 42, 0.94);
   --footer-border: #e2e8f0;
+  --scrollbar-track: #f1f5f9;
+  --scrollbar-thumb: #94a3b8;
+  --scrollbar-thumb-hover: #64748b;
 }
 
 /* Professional Dark Theme Variables (Linear / GitHub Dark Inspired) */
@@ -41,18 +44,43 @@
   --input-border: rgba(255, 255, 255, 0.12);
   --navbar-bg: rgba(10, 14, 23, 0.96);
   --footer-border: rgba(255, 255, 255, 0.08);
+  --scrollbar-track: #0a0e17;
+  --scrollbar-thumb: #334155;
+  --scrollbar-thumb-hover: #475569;
 }
 
 html {
   font-size: 14px;
   position: relative;
   min-height: 100%;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+/* Global Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 6px;
+  border: 2px solid var(--scrollbar-track);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Anchor Navigation Smooth Scroll Alignment */
+section[id] {
+  scroll-margin-top: 90px;
 }
 
 body {
@@ -284,4 +312,25 @@ nav.sticky-top {
 footer.footer {
   border-top-color: var(--footer-border) !important;
   background-color: transparent;
+}
+
+/* Scanner Preview Hero Card - Always Fixed Pure White Container */
+.scanner-white-container,
+[data-bs-theme="dark"] .scanner-white-container {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12) !important;
+}
+
+.scanner-white-container .preview-header,
+[data-bs-theme="dark"] .scanner-white-container .preview-header {
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+.scanner-white-container .preview-body,
+[data-bs-theme="dark"] .scanner-white-container .preview-body {
+  background-color: #ffffff !important;
+  color: #1e293b !important;
 }

@@ -297,15 +297,6 @@ erDiagram
 
 ---
 
-## 🎓 Viva & Technical Defense Documentation
-
-For academic defense, project presentations, and oral examinations, comprehensive reference documentation is included in the root directory:
-
-- 📄 **[DEPLOYGUARD_VIVA_GUIDE.txt](DEPLOYGUARD_VIVA_GUIDE.txt)**: Plain text guide with architecture details, module mechanics, and top examiner Q&As.
-- 📑 **[DEPLOYGUARD_VIVA_GUIDE.pdf](DEPLOYGUARD_VIVA_GUIDE.pdf)**: Formatted, printable vector PDF reference guide.
-
----
-
 ## 📄 License & Author
 
 - **Author**: Jay ([@jay240322](https://github.com/jay240322))
