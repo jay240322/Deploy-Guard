@@ -145,63 +145,71 @@ public class AccountController : Controller
     }
 
     [HttpPost]
+    [IgnoreAntiforgeryToken]
     public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request)
     {
-        if (request == null || string.IsNullOrWhiteSpace(request.Email))
+        try
         {
-            return Json(new { success = false, message = "Email is required for Google sign-in." });
-        }
-
-        var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == request.Email);
-        if (user == null)
-        {
-            var baseUsername = request.Email.Split('@')[0].Replace(".", "_").ToLower();
-            var username = baseUsername;
-            int count = 1;
-            while (await _context.AppUsers.AnyAsync(u => u.UserName == username))
+            if (request == null || string.IsNullOrWhiteSpace(request.Email))
             {
-                username = $"{baseUsername}{count++}";
+                return Json(new { success = false, message = "Email is required for Google sign-in." });
             }
 
-            user = new AppUser
+            var user = await _context.AppUsers.FirstOrDefaultAsync(u => u.Email == request.Email);
+            if (user == null)
             {
-                UserName = username,
-                Email = request.Email,
-                FullName = string.IsNullOrWhiteSpace(request.FullName) ? username : request.FullName,
-                Role = "User",
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
+                var baseUsername = request.Email.Split('@')[0].Replace(".", "_").ToLower();
+                var username = baseUsername;
+                int count = 1;
+                while (await _context.AppUsers.AnyAsync(u => u.UserName == username))
+                {
+                    username = $"{baseUsername}{count++}";
+                }
+
+                user = new AppUser
+                {
+                    UserName = username,
+                    Email = request.Email,
+                    FullName = string.IsNullOrWhiteSpace(request.FullName) ? username : request.FullName,
+                    Role = "User",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                };
+                user.PasswordHash = _passwordHasher.HashPassword(user, Guid.NewGuid().ToString("N"));
+
+                _context.AppUsers.Add(user);
+                await _context.SaveChangesAsync();
+            }
+
+            if (!user.IsActive)
+            {
+                return Json(new { success = false, message = "This account is inactive. Please contact an administrator." });
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role)
             };
-            user.PasswordHash = _passwordHasher.HashPassword(user, Guid.NewGuid().ToString("N"));
 
-            _context.AppUsers.Add(user);
-            await _context.SaveChangesAsync();
+            var identity = new ClaimsIdentity(
+                claims,
+                CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                principal);
+
+            return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
         }
-
-        if (!user.IsActive)
+        catch (Exception ex)
         {
-            return Json(new { success = false, message = "This account is inactive. Please contact an administrator." });
+            return Json(new { success = false, message = $"Database or authentication error: {ex.Message}" });
         }
-
-        var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role)
-        };
-
-        var identity = new ClaimsIdentity(
-            claims,
-            CookieAuthenticationDefaults.AuthenticationScheme);
-
-        var principal = new ClaimsPrincipal(identity);
-
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            principal);
-
-        return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
     }
 
     [HttpGet]
