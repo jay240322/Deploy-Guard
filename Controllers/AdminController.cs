@@ -397,9 +397,10 @@ public class AdminController : Controller
             });
         }
 
-        // Rank by risk score descending, then by total secrets
+        // Sort by scan date and time descending (most recently scanned first), then by risk score
         riskyRepositories = riskyRepositories
-            .OrderByDescending(r => r.RiskScore)
+            .OrderByDescending(r => r.LastScannedAt ?? DateTime.MinValue)
+            .ThenByDescending(r => r.RiskScore)
             .ThenByDescending(r => r.TotalSecrets)
             .ToList();
 

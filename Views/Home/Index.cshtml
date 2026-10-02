@@ -178,40 +178,36 @@
                     }
                     else
                     {
-                        <div class="list-group list-group-flush">
+                        <div class="d-flex flex-column gap-2">
 
                             @foreach (var repository in Model.RecentRepositories)
                             {
-                                <div class="list-group-item px-0">
+                                <div class="recent-item-card p-3 rounded-3 border d-flex justify-content-between align-items-center">
 
-                                    <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <span class="fs-4" title="@repository.Provider">
+                                            <partial name="_ProviderIcon" model="repository.Provider" />
+                                        </span>
+                                        <div>
+                                            <a asp-controller="Repository"
+                                               asp-action="Details"
+                                               asp-route-id="@repository.Id"
+                                               class="fw-semibold text-main text-decoration-none">
+                                                @repository.Name
+                                            </a>
 
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="fs-5" title="@repository.Provider">
-                                                <partial name="_ProviderIcon" model="repository.Provider" />
-                                            </span>
-                                            <div>
-                                                <a asp-controller="Repository"
-                                                   asp-action="Details"
-                                                   asp-route-id="@repository.Id"
-                                                   class="fw-semibold text-decoration-none">
-                                                    @repository.Name
-                                                </a>
-
-                                                <div class="small text-muted">
-                                                    @(string.IsNullOrEmpty(repository.Language) ? "Git Repository" : repository.Language)
-                                                </div>
+                                            <div class="small text-muted">
+                                                @(string.IsNullOrEmpty(repository.Language) ? "Git Repository" : repository.Language)
                                             </div>
                                         </div>
-
-                                        <a asp-controller="Repository"
-                                           asp-action="Details"
-                                           asp-route-id="@repository.Id"
-                                           class="btn btn-sm btn-outline-secondary">
-                                            View
-                                        </a>
-
                                     </div>
+
+                                    <a asp-controller="Repository"
+                                       asp-action="Details"
+                                       asp-route-id="@repository.Id"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        View
+                                    </a>
 
                                 </div>
                             }
@@ -260,70 +256,66 @@
                     }
                     else
                     {
-                        <div class="list-group list-group-flush">
+                        <div class="d-flex flex-column gap-2">
 
                             @foreach (var scan in Model.RecentScans)
                             {
-                                <div class="list-group-item px-0">
+                                <div class="recent-item-card p-3 rounded-3 border d-flex justify-content-between align-items-center">
 
-                                    <div class="d-flex justify-content-between align-items-center">
+                                    <div>
 
-                                        <div>
+                                        <a asp-controller="Scan"
+                                           asp-action="Details"
+                                           asp-route-id="@scan.Id"
+                                           class="fw-semibold text-main text-decoration-none">
 
-                                            <a asp-controller="Scan"
-                                               asp-action="Details"
-                                               asp-route-id="@scan.Id"
-                                               class="fw-semibold text-decoration-none">
+                                            @(scan.Repository?.Name ?? "Unknown Repository")
 
-                                                @(scan.Repository?.Name ?? "Unknown Repository")
+                                        </a>
 
-                                            </a>
+                                        <div class="small text-muted" data-utc="@scan.StartedAt.ToString("o")" data-utc-format="datetime">
+                                            @scan.StartedAt.ToString("dd MMM yyyy, hh:mm tt")
+                                        </div>
 
-                                            <div class="small text-muted" data-utc="@scan.StartedAt.ToString("o")" data-utc-format="datetime">
-                                                @scan.StartedAt.ToString("dd MMM yyyy, hh:mm tt")
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-3">
+
+                                        <div class="text-end">
+
+                                            @if (scan.Status == "Completed")
+                                            {
+                                                <span class="badge bg-success">
+                                                    Completed
+                                                </span>
+                                            }
+                                            else if (scan.Status == "Failed")
+                                            {
+                                                <span class="badge bg-danger">
+                                                    Failed
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-warning text-dark">
+                                                    @scan.Status
+                                                </span>
+                                            }
+
+                                            <div class="small text-muted mt-1">
+                                                @scan.SecretsFound secret(s)
                                             </div>
 
                                         </div>
 
-                                        <div class="d-flex align-items-center gap-3">
-
-                                            <div class="text-end">
-
-                                                @if (scan.Status == "Completed")
-                                                {
-                                                    <span class="badge bg-success">
-                                                        Completed
-                                                    </span>
-                                                }
-                                                else if (scan.Status == "Failed")
-                                                {
-                                                    <span class="badge bg-danger">
-                                                        Failed
-                                                    </span>
-                                                }
-                                                else
-                                                {
-                                                    <span class="badge bg-warning text-dark">
-                                                        @scan.Status
-                                                    </span>
-                                                }
-
-                                                <div class="small text-muted mt-1">
-                                                    @scan.SecretsFound secret(s)
-                                                </div>
-
-                                            </div>
-
-                                            <a asp-controller="Scan"
-                                               asp-action="Details"
-                                               asp-route-id="@scan.Id"
-                                               class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center"
-                                               style="width: 32px; height: 32px;"
-                                               title="View Scan Details">
-                                                <i class="bi bi-chevron-right"></i>
-                                            </a>
-
-                                        </div>
+                                        <a asp-controller="Scan"
+                                           asp-action="Details"
+                                           asp-route-id="@scan.Id"
+                                           class="btn btn-sm btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center"
+                                           style="width: 32px; height: 32px;"
+                                           title="View Scan Details">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
 
                                     </div>
 
