@@ -42,9 +42,13 @@ builder.Services.AddAuthentication(
     });
 
 // Database - Support both standard ADO.NET and Render's DATABASE_URL
-var rawConnectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-    ?? builder.Configuration["DATABASE_URL"]
-    ?? Environment.GetEnvironmentVariable("DATABASE_URL");
+var defaultConn = builder.Configuration.GetConnectionString("DefaultConnection");
+var rawConnectionString = !string.IsNullOrWhiteSpace(defaultConn)
+    ? defaultConn
+    : builder.Configuration["DATABASE_URL"]
+      ?? builder.Configuration["DATABASE_URL_UNPOOLED"]
+      ?? Environment.GetEnvironmentVariable("DATABASE_URL")
+      ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 
 var connectionString = ParsePostgreSqlConnectionString(rawConnectionString);
 
@@ -53,6 +57,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     if (!string.IsNullOrWhiteSpace(connectionString))
     {
         options.UseNpgsql(connectionString);
+    }
+    else
+    {
+        // Fallback default for development if nothing specified
+        options.UseNpgsql("Host=localhost;Port=5432;Database=deployguard;Username=postgres;Password=postgres;");
     }
 });
 
