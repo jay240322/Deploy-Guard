@@ -21,6 +21,13 @@
     <link rel="stylesheet"
           href="~/Deployguard.styles.css"
           asp-append-version="true" />
+
+    <script>
+        (function() {
+            var savedTheme = localStorage.getItem('deployguard-theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        })();
+    </script>
 </head>
 
 <body>

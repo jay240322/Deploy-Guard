@@ -279,10 +279,8 @@
 
                                             </a>
 
-                                            <div class="small text-muted">
-
-                                                @scan.StartedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
-
+                                            <div class="small text-muted" data-utc="@scan.StartedAt.ToString("o")" data-utc-format="datetime">
+                                                @scan.StartedAt.ToString("dd MMM yyyy, hh:mm tt")
                                             </div>
 
                                         </div>

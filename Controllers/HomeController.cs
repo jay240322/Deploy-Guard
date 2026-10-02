@@ -8,7 +8,6 @@ using System.Security.Claims;
 
 namespace Deployguard.Controllers;
 
-[Authorize]
 public class HomeController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -19,14 +18,26 @@ public class HomeController : Controller
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<IActionResult> Index()
     {
-        var userIdClaim = User.FindFirstValue(
-            ClaimTypes.NameIdentifier);
+        // If user is not authenticated, show the public Landing Page
+        if (User.Identity?.IsAuthenticated != true)
+        {
+            return View("Landing");
+        }
+
+        // If user is Admin, redirect to Admin dashboard
+        if (User.IsInRole("Admin"))
+        {
+            return RedirectToAction("Index", "Admin");
+        }
+
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         if (!int.TryParse(userIdClaim, out var userId))
         {
-            return Forbid();
+            return View("Landing");
         }
 
         var user = await _context.AppUsers
@@ -34,7 +45,7 @@ public class HomeController : Controller
 
         if (user == null)
         {
-            return NotFound();
+            return View("Landing");
         }
 
         var repositories = await _context.Repositories
@@ -52,23 +63,21 @@ public class HomeController : Controller
         {
             UserName = user.UserName,
             FullName = user.FullName,
-
             RepositoryCount = repositories.Count,
-
             ScanCount = scans.Count,
-
             SecretsFound = scans.Sum(s => s.SecretsFound),
-
-            RecentRepositories = repositories
-                .Take(5)
-                .ToList(),
-
-            RecentScans = scans
-                .Take(5)
-                .ToList()
+            RecentRepositories = repositories.Take(5).ToList(),
+            RecentScans = scans.Take(5).ToList()
         };
 
-        return View(dashboard);
+        return View("Index", dashboard);
+    }
+
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Dashboard()
+    {
+        return await Index();
     }
 
     [AllowAnonymous]
@@ -88,9 +97,7 @@ public class HomeController : Controller
         return View(
             new ErrorViewModel
             {
-                RequestId =
-                    Activity.Current?.Id
-                    ?? HttpContext.TraceIdentifier
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
             });
     }
 }

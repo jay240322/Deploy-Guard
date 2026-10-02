@@ -1,5 +1,46 @@
+/* ==========================================================================
+   DeployGuard Global Design System & Theme Engine
+   ========================================================================== */
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --transition-speed: 0.25s;
+}
+
+/* Light Theme Variables */
+[data-bs-theme="light"] {
+  --body-bg: #f8fafc;
+  --card-bg: #ffffff;
+  --card-border: rgba(226, 232, 240, 0.9);
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --table-hover-bg: rgba(241, 245, 249, 0.7);
+  --subtle-bg: #f1f5f9;
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --navbar-bg: rgba(30, 35, 42, 0.94);
+  --footer-border: #e2e8f0;
+}
+
+/* Dark Theme Variables */
+[data-bs-theme="dark"] {
+  --body-bg: #090d16;
+  --card-bg: #131b2e;
+  --card-border: rgba(51, 65, 85, 0.8);
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --table-hover-bg: rgba(30, 41, 59, 0.6);
+  --subtle-bg: #1e293b;
+  --input-bg: #0f172a;
+  --input-border: #334155;
+  --navbar-bg: rgba(11, 17, 32, 0.96);
+  --footer-border: #1e293b;
+}
+
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -8,22 +49,26 @@ html {
   }
 }
 
+body {
+  font-family: var(--font-sans);
+  margin-bottom: 60px;
+  background-color: var(--body-bg) !important;
+  color: var(--text-main);
+  transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+}
+
+/* Base Typography & Text Helpers */
+.text-main {
+  color: var(--text-main) !important;
+}
+
+/* Focus Outlines */
 .btn:focus,
 .btn:active:focus,
 .btn-link.nav-link:focus,
 .form-control:focus,
 .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
-body {
-  margin-bottom: 60px;
-  background-color: #d1dae451;
+  box-shadow: 0 0 0 0.15rem rgba(37, 99, 235, 0.25);
 }
 
 /* Sticky Navbar Styles */
@@ -34,13 +79,14 @@ nav.sticky-top {
   z-index: 1030 !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  background-color: rgba(30, 35, 42, 0.94) !important;
+  background-color: var(--navbar-bg) !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
-/* Navbar Link Styles & Active Page Light Blur Indicator */
+/* Navbar Link Styles */
 .navbar-dark .navbar-nav .nav-link {
-  color: rgba(255, 255, 255, 0.72) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
   font-weight: 500;
   transition: all 0.2s ease-in-out;
   border: 1px solid transparent;
@@ -72,22 +118,112 @@ nav.sticky-top {
   -webkit-backdrop-filter: blur(8px);
 }
 
-.form-floating>.form-control-plaintext::placeholder,
-.form-floating>.form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  width: 36px;
+  height: 36px;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  transition: all 0.2s ease;
 }
 
-.form-floating>.form-control-plaintext:focus::placeholder,
-.form-floating>.form-control:focus::placeholder {
-  text-align: start;
+.theme-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  color: #ffffff !important;
+  transform: scale(1.05);
 }
 
-/* Modal Stacking & Visibility Fix */
+/* Card Styling */
+.card {
+  background-color: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+  color: var(--text-main);
+  transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-header.bg-white {
+  background-color: var(--card-bg) !important;
+  border-bottom-color: var(--card-border) !important;
+  color: var(--text-main);
+}
+
+/* Table Styling */
+.table {
+  color: var(--text-main) !important;
+  --bs-table-hover-bg: var(--table-hover-bg);
+}
+
+.table-light,
+.table thead.table-light th {
+  background-color: var(--subtle-bg) !important;
+  color: var(--text-main) !important;
+  border-bottom-color: var(--card-border) !important;
+}
+
+[data-bs-theme="dark"] .table {
+  --bs-table-bg: transparent;
+  border-color: var(--card-border);
+}
+
+[data-bs-theme="dark"] .table td,
+[data-bs-theme="dark"] .table th {
+  border-color: var(--card-border);
+}
+
+/* Form Controls & Inputs */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+  background-color: var(--input-bg);
+  border-color: #3b82f6;
+  color: #f8fafc;
+}
+
+[data-bs-theme="dark"] .input-group-text {
+  background-color: #1e293b !important;
+  border-color: var(--input-border);
+  color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .bg-light {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .border {
+  border-color: var(--card-border) !important;
+}
+
+/* Modal Stacking & Visibility */
 .modal {
   z-index: 1060 !important;
 }
 
 .modal-backdrop {
   z-index: 1050 !important;
+}
+
+[data-bs-theme="dark"] .modal-content {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  color: var(--text-main);
+}
+
+[data-bs-theme="dark"] .modal-header.bg-light,
+[data-bs-theme="dark"] .modal-footer.bg-light {
+  background-color: #0f172a !important;
+  border-color: var(--card-border);
+}
+
+/* Footer Styling */
+footer.footer {
+  border-top-color: var(--footer-border) !important;
+  background-color: transparent;
 }

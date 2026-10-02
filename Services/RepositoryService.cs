@@ -102,6 +102,13 @@ public class RepositoryService
                 r.CreatedByUserId == userId);
     }
 
+    public async Task<Repository?> GetRepositoryByIdAsync(
+        int repositoryId)
+    {
+        return await _context.Repositories
+            .FirstOrDefaultAsync(r => r.Id == repositoryId);
+    }
+
     public async Task<bool> RefreshMetadataAsync(
         int userId,
         int repositoryId)

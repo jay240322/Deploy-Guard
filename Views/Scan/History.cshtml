@@ -255,12 +255,12 @@
 
                                 <!-- Started -->
                                 <td>
-                                    <div>
-                                        @scan.StartedAt.ToLocalTime().ToString("dd MMM yyyy")
+                                    <div data-utc="@scan.StartedAt.ToString("o")" data-utc-format="date">
+                                        @scan.StartedAt.ToString("dd MMM yyyy")
                                     </div>
 
-                                    <small class="text-muted">
-                                        @scan.StartedAt.ToLocalTime().ToString("hh:mm tt")
+                                    <small class="text-muted" data-utc="@scan.StartedAt.ToString("o")" data-utc-format="time">
+                                        @scan.StartedAt.ToString("hh:mm tt")
                                     </small>
                                 </td>
 
@@ -269,12 +269,12 @@
                                 <td>
                                     @if (scan.CompletedAt.HasValue)
                                     {
-                                        <div>
-                                            @scan.CompletedAt.Value.ToLocalTime().ToString("dd MMM yyyy")
+                                        <div data-utc="@scan.CompletedAt.Value.ToString("o")" data-utc-format="date">
+                                            @scan.CompletedAt.Value.ToString("dd MMM yyyy")
                                         </div>
 
-                                        <small class="text-muted">
-                                            @scan.CompletedAt.Value.ToLocalTime().ToString("hh:mm tt")
+                                        <small class="text-muted" data-utc="@scan.CompletedAt.Value.ToString("o")" data-utc-format="time">
+                                            @scan.CompletedAt.Value.ToString("hh:mm tt")
                                         </small>
                                     }
                                     else

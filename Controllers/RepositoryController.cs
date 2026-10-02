@@ -94,20 +94,20 @@ public class RepositoryController : Controller
             return Challenge();
         }
 
-        var repository =
-            await _repositoryService.GetUserRepositoryAsync(
-                userId.Value,
-                id);
+        var isAdmin = User.IsInRole("Admin");
+
+        var repository = isAdmin
+            ? await _repositoryService.GetRepositoryByIdAsync(id)
+            : await _repositoryService.GetUserRepositoryAsync(userId.Value, id);
 
         if (repository == null)
         {
             return NotFound();
         }
 
-        var latestScan =
-            await _scanService.GetLatestScanAsync(
-                id,
-                userId.Value);
+        var latestScan = isAdmin
+            ? await _scanService.GetLatestScanAsync(id, repository.CreatedByUserId)
+            : await _scanService.GetLatestScanAsync(id, userId.Value);
 
         ViewBag.LatestScan = latestScan;
 

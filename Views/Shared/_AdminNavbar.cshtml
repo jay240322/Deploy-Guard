@@ -68,6 +68,18 @@
 
             <ul class="navbar-nav align-items-center gap-2">
 
+                <!-- Theme Toggle Button -->
+                <li class="nav-item me-1">
+                    <button type="button"
+                            class="btn btn-outline-light btn-sm d-flex align-items-center justify-content-center p-2 rounded-circle theme-toggle-btn"
+                            id="themeToggleBtn"
+                            title="Toggle Light / Dark Mode"
+                            aria-label="Toggle Theme">
+                        <i class="bi bi-moon-stars-fill theme-icon-dark"></i>
+                        <i class="bi bi-sun-fill theme-icon-light d-none text-warning"></i>
+                    </button>
+                </li>
+
                 @if (User.Identity?.IsAuthenticated == true)
                 {
                     <li class="nav-item text-light d-flex align-items-center gap-2 me-2 px-2 py-1 user-profile-badge">

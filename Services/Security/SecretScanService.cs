@@ -136,6 +136,17 @@ public class SecretScanService
                 s.TriggeredByUserId == userId);
     }
 
+    public async Task<SecretScan?> GetScanByIdAsync(
+        int scanId)
+    {
+        return await _context.SecretScans
+            .Include(s => s.Repository)
+            .Include(s => s.Findings)
+                .ThenInclude(f => f.SecretRule)
+            .FirstOrDefaultAsync(s =>
+                s.Id == scanId);
+    }
+
     public async Task<List<SecretScan>> GetUserScansAsync(
         int userId)
     {

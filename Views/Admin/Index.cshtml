@@ -391,8 +391,8 @@
 
                                             </td>
 
-                                            <td>
-                                                @scan.StartedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")
+                                            <td data-utc="@scan.StartedAt.ToString("o")" data-utc-format="datetime">
+                                                @scan.StartedAt.ToString("dd MMM yyyy, hh:mm tt")
                                             </td>
 
                                             <td class="text-end">

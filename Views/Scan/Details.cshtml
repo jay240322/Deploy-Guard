@@ -191,8 +191,8 @@ else
                     Scan Started
                 </div>
 
-                <div class="mt-1">
-                    @Model.StartedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                <div class="mt-1" data-utc="@Model.StartedAt.ToString("o")" data-utc-format="datetime">
+                    @Model.StartedAt.ToString("dd MMM yyyy, hh:mm tt")
                 </div>
             </div>
 
@@ -204,11 +204,9 @@ else
                 <div class="mt-1">
                     @if (Model.CompletedAt.HasValue)
                     {
-                        var completedTime =
-                            Model.CompletedAt.Value.ToLocalTime();
-
-                        @completedTime.ToString(
-                            "dd MMM yyyy HH:mm")
+                        <span data-utc="@Model.CompletedAt.Value.ToString("o")" data-utc-format="datetime">
+                            @Model.CompletedAt.Value.ToString("dd MMM yyyy, hh:mm tt")
+                        </span>
                     }
                     else
                     {
