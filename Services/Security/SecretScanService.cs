@@ -147,6 +147,14 @@ public class SecretScanService
                 s.Id == scanId);
     }
 
+    public async Task<List<SecretScan>> GetAllScansAsync()
+    {
+        return await _context.SecretScans
+            .Include(s => s.Repository)
+            .OrderByDescending(s => s.StartedAt)
+            .ToListAsync();
+    }
+
     public async Task<List<SecretScan>> GetUserScansAsync(
         int userId)
     {

@@ -1,108 +1,97 @@
-# 🛡️ DeployGuard
+<div align="center">
 
-> **Continuous CI/CD Security Intelligence, Pattern/Secret Scans & Pipeline Execution Visualizer**
+  <img src="wwwroot/images/logo.png" alt="DeployGuard Logo" width="130" height="130" />
 
-[![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat&logo=dotnet)](https://dotnet.microsoft.com/)
-[![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?style=flat&logo=dotnet)](https://dotnet.microsoft.com/apps/aspnet/mvc)
-[![Entity Framework Core](https://img.shields.io/badge/EF%20Core-10.0-512BD4?style=flat&logo=nuget)](https://docs.microsoft.com/ef/core/)
-[![QuestPDF](https://img.shields.io/badge/PDF%20Engine-QuestPDF-007ACC?style=flat)](https://www.questpdf.com/)
-[![Firebase Auth](https://img.shields.io/badge/Auth-Firebase%20%26%20Cookies-FFA611?style=flat&logo=firebase)](https://firebase.google.com/)
-[![Bootstrap 5](https://img.shields.io/badge/UI-Bootstrap%205-7952B3?style=flat&logo=bootstrap)](https://getbootstrap.com/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+  # DeployGuard
+  ### Enterprise DevSecOps Intelligence, Static Secret Detection & CI/CD Pipeline Visualizer
+
+  [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+  [![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet/mvc)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+  [![QuestPDF](https://img.shields.io/badge/QuestPDF-Vector%20Reports-007ACC?style=for-the-badge)](https://www.questpdf.com/)
+  [![Firebase](https://img.shields.io/badge/Firebase-OAuth%202.0-FFA611?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/)
+  [![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
+  [![License](https://img.shields.io/badge/License-MIT-success.svg?style=for-the-badge)](LICENSE)
+
+  <p align="center">
+    <strong>DeployGuard</strong> continuously inspects Git repositories for exposed API credentials, database keys, and CI/CD pipeline vulnerabilities in seconds before deployment.
+  </p>
+
+  <p align="center">
+    <a href="#-key-features">Key Features</a> •
+    <a href="#-system-architecture">Architecture</a> •
+    <a href="#-technology-stack">Tech Stack</a> •
+    <a href="#-quick-start">Quick Start</a> •
+    <a href="#-how-it-works">How It Works</a> •
+    <a href="#-database-schema">Database Schema</a> •
+    <a href="#-author--contact">Author</a>
+  </p>
+
+</div>
 
 ---
 
-## 📖 Table of Contents
-- [Project Overview](#-project-overview)
-- [Key Features](#-key-features)
-- [System Architecture](#-system-architecture)
-- [Technology Stack](#-technology-stack)
-- [Directory Structure](#-directory-structure)
-- [Getting Started](#-getting-started)
-- [How It Works Under the Hood](#-how-it-works-under-the-hood)
-  - [1. Shallow Git Ingestion](#1-shallow-git-ingestion)
-  - [2. Secret Scanner & Regex Heuristics](#2-secret-scanner--regex-heuristics)
-  - [3. CI/CD AST Parser & Visualizer](#3-cicd-ast-parser--visualizer)
-  - [4. Vector PDF Audit Reports](#4-vector-pdf-audit-reports)
-  - [5. Hybrid Authentication](#5-hybrid-authentication)
-- [Database Schema](#-database-schema)
-- [Viva & Technical Defense Documentation](#-viva--technical-defense-documentation)
-- [Contributing & License](#-contributing--license)
+## 🌟 Overview
 
----
-
-## 🌟 Project Overview
-
-**DeployGuard** is an automated DevSecOps platform built with **ASP.NET Core (C# .NET 10)**. It safeguards repositories by proactively detecting hardcoded secrets and credentials in source code and parsing complex CI/CD pipeline workflows into clear, interactive visual Directed Acyclic Graphs (DAGs).
+**DeployGuard** is an automated DevSecOps platform built with **ASP.NET Core (.NET 10)**. It safeguards software organizations by proactively detecting hardcoded secrets, leaked tokens, and cloud credentials in source repositories while parsing complex CI/CD pipeline workflows into interactive, visual Directed Acyclic Graphs (DAGs).
 
 ### 🎯 Problems Solved:
-1. **Accidental Credential Exposure**: Detects API keys, database passwords, and cryptographic private keys before code reaches production.
-2. **CI/CD Visibility & Bottlenecks**: Parses `.github/workflows/*.yml` and `Jenkinsfile` into chronological execution stages.
-3. **Audit Compliance**: Produces instant, professional vector PDF audit reports for security teams and administrators.
+1. **Accidental Credential Leaks**: Detects API keys, database connection strings, and cryptographic private keys before code reaches production.
+2. **CI/CD Pipeline Observability**: Parses `.github/workflows/*.yml` and `Jenkinsfile` into structured execution stages with dependency trees.
+3. **Audit Readiness**: Generates executive vector PDF reports for compliance and security auditing.
+4. **Sandboxed Security**: Zero data retention architecture using isolated shallow Git ingestion.
 
 ---
 
 ## ✨ Key Features
 
-- 🔍 **High-Speed Static Secret Scanner**: Shallow-clones repositories (`--depth 1`) and inspects files line-by-line in sub-seconds.
-- 🔒 **Defense-in-Depth Secret Masking**: Raw tokens are automatically masked (e.g. `AKIA****************1234`) to prevent secondary exposure.
-- 🌳 **CI/CD Workflow Visualizer**: Interactive stage graphs displaying sequential order, parallel executions, and prerequisite dependencies (`needs`/`if`).
-- 📄 **Instant PDF Export**: Vector-based PDF generation powered by **QuestPDF** with risk radars, severity tables, and remediation guides.
-- 🔑 **Hybrid Authentication**: ASP.NET Core Cookie Authentication paired with **Firebase Google Sign-In (OAuth 2.0)**.
-- 👑 **Admin Portal & Analytics**: Real-time platform scan metrics, average scan duration, risky repository ranking, and user management.
-- 🎨 **Responsive UI/UX**: Compact, zero-scroll authentication screens, sticky top navigation, and modal backdrop isolation.
+- 🔍 **Sub-Second Secret Detection**: High-speed line-by-line static code analyzer matching against 16+ enterprise pattern definitions (AWS, GitHub, Stripe, RSA, JWT, DB URIs).
+- 🛡️ **Defense-in-Depth Token Masking**: Raw secrets are masked at the service boundary (e.g. `AKIA****************1234`) to prevent secondary leakage in logs or reports.
+- 🌳 **Interactive CI/CD Graph Visualizer**: AST-based workflow parser mapping jobs, prerequisite dependencies (`needs`), parallel execution flags, and execution conditions (`if`).
+- 📊 **Executive Vector PDF Audits**: Powered by **QuestPDF** to generate crisp, high-resolution audit reports with severity risk radars and line-by-line remediation guides.
+- 🔐 **Hybrid Security & Single Sign-On**: ASP.NET Core Cookie Authentication paired with **Firebase Google OAuth 2.0 Single Sign-On**.
+- 👑 **Admin Governance Portal**: Global platform health dashboard, risky repository ranking, user authorization management, and PDF intelligence export.
+- 🎨 **Modern Design Engine**: Responsive dark/light theme switching, sticky blurred header, custom micro-animations, and unified Google Font typography (**Plus Jakarta Sans**).
+- ⚡ **Global Loading & Processing Engine**: Smooth debounce-driven loading overlays and button-level spinner indicators on long-running tasks.
 
 ---
 
 ## 🏗️ System Architecture
 
-```
-   +-------------------------------------------------------------------------+
-   |                            USER INTERFACE                               |
-   |   (Login / Google SSO -> Dashboard -> Add Repository -> Details Page)   |
-   +-------------------------------------------------------------------------+
-                                        │
-                                        ▼
-   +-------------------------------------------------------------------------+
-   |                       REPOSITORY INGESTION LAYER                        |
-   |  • RepositoryUrlParser (Extracts Owner, RepoName, Provider)             |
-   |  • RepositoryCloneService (git clone --depth 1 <url> to Temp Sandbox)   |
-   +-------------------------------------------------------------------------+
-                                        │
-                    ┌───────────────────┴───────────────────┐
-                    ▼                                       ▼
-   +---------------------------------+   +---------------------------------+
-   |      SECRET SCANNING ENGINE     |   |     CI/CD PIPELINE ENGINE       |
-   | • File Traversal & Binary Filter|   | • PipelineDetectionService      |
-   | • Regex Pattern Evaluation      |   | • PipelineParserService (YAML)  |
-   | • Line, Severity & Masking      |   | • Stage & Dependency Graph      |
-   +---------------------------------+   +---------------------------------+
-                    │                                       │
-                    └───────────────────┬───────────────────┘
-                                        ▼
-   +-------------------------------------------------------------------------+
-   |                       PERSISTENCE & AUDIT LAYER                         |
-   |  • Relational Storage (PostgreSQL / SQLite via EF Core)                 |
-   |  • QuestPDF Vector Document Generation Engine                           |
-   |  • Admin Platform Analytics & User Management                           |
-   +-------------------------------------------------------------------------+
+```mermaid
+flowchart TD
+    subgraph UI ["User Interface Layer"]
+        A[Client Browser] --> B[Guest Landing / Auth / User & Admin Dashboards]
+    end
+
+    subgraph Core ["ASP.NET Core Application Layer"]
+        B --> C[Controllers & Routing]
+        C --> D[RepositoryCloneService - Shallow Git Ingestion]
+        C --> E[SecretScannerService - Regex Heuristics Engine]
+        C --> F[PipelineParserService - YamlDotNet AST Engine]
+        C --> G[QuestPDF Engine - Vector Document Builder]
+    end
+
+    subgraph Data ["Data & Persistence Layer"]
+        C --> H[(PostgreSQL / SQLite via EF Core 10)]
+        H --> I[AppUsers / Repositories / SecretScans / SecretFindings / PipelineStages]
+    end
 ```
 
 ---
 
 ## 💻 Technology Stack
 
-| Layer | Technology | Purpose |
+| Layer | Technology | Description |
 |---|---|---|
-| **Framework** | **ASP.NET Core 10 MVC** | High-performance asynchronous backend and routing |
-| **Language** | **C# 13 / .NET 10** | Modern type-safe object-oriented codebase |
-| **ORM** | **Entity Framework Core 10** | Code-first schema, relational mapping, and migrations |
-| **Database** | **PostgreSQL / SQLite** | Persistent relational storage for users, repos, scans |
-| **Authentication** | **Cookie Auth + Firebase SDK** | Hybrid authentication with Google OAuth 2.0 Single Sign-On |
-| **Git Ingestion** | **Git CLI (`git clone --depth 1`)** | Sub-second shallow repository cloning to sandboxed storage |
-| **AST / Parsing** | **YamlDotNet & Custom Lexer** | Parses GitHub Actions YAML and declarative Jenkinsfiles |
-| **PDF Generation** | **QuestPDF** | In-memory vector PDF document generation |
-| **Frontend** | **Bootstrap 5 & Vanilla JS** | Modern, responsive interface with custom scroll viewports |
+| **Framework** | **ASP.NET Core 10 (MVC)** | High-throughput asynchronous web application framework |
+| **Language** | **C# 13 / .NET 10** | Modern, type-safe backend programming language |
+| **ORM & Data** | **Entity Framework Core 10** | Code-First migrations, automated seeding, and relational queries |
+| **Database** | **PostgreSQL / SQLite** | High-performance ACID relational storage |
+| **PDF Generation** | **QuestPDF** | In-memory fluent vector document layout engine |
+| **Workflow Parsing** | **YamlDotNet** | Abstract Syntax Tree (AST) parser for GitHub Actions & Jenkinsfiles |
+| **Authentication** | **Cookie Auth + Firebase SDK** | Secure PBKDF2 password hashing & Google OAuth 2.0 Single Sign-On |
+| **Styling & UI** | **Bootstrap 5.3 + Vanilla CSS** | Custom design system with dark/light themes and Google Fonts |
 
 ---
 
@@ -112,14 +101,14 @@
 Deployguard/
 ├── Controllers/
 │   ├── AccountController.cs       # Authentication, Login, Register, Google SSO, Logout
-│   ├── AdminController.cs         # Admin Dashboard, User Management, Scan Usage Reports
-│   ├── HomeController.cs          # Dashboard metrics and overview
+│   ├── AdminController.cs         # Admin Dashboard, User Management, Scan Reports
+│   ├── HomeController.cs          # Landing page and user overview dashboard
 │   ├── PipelineController.cs      # CI/CD pipeline stage visualization
-│   ├── ReportController.cs        # User PDF audit report generation
-│   ├── RepositoryController.cs    # Repository registration, details, scan triggers
-│   └── ScanController.cs          # Scan history and finding details
+│   ├── ReportController.cs        # User PDF audit report downloads
+│   ├── RepositoryController.cs    # Git repository management and scan triggers
+│   └── ScanController.cs          # Scan history, detail findings & remediation
 ├── Data/
-│   └── ApplicationDbContext.cs    # EF Core database context & model relations
+│   └── ApplicationDbContext.cs    # EF Core context, entity models & relationships
 ├── Models/                        # Domain entities and ViewModels
 │   ├── AdminReportViewModel.cs
 │   ├── AdminUsersViewModel.cs
@@ -131,33 +120,36 @@ Deployguard/
 │   ├── SecretRule.cs
 │   └── SecretScan.cs
 ├── Services/
-│   ├── Pipeline/                  # CI/CD discovery & AST parsing (YamlDotNet)
-│   ├── Providers/                 # Git hosting provider detection
-│   ├── Reports/                   # QuestPDF document builders (User & Admin reports)
-│   ├── Security/                  # Secret regex rules, clone service, scanner
+│   ├── Pipeline/                  # Workflow discovery & AST YAML parsers
+│   ├── Providers/                 # Git provider detection (GitHub, GitLab, Bitbucket, Azure DevOps)
+│   ├── Reports/                   # QuestPDF builders for User and Admin PDF reports
+│   ├── Security/                  # Sandbox shallow clone and static regex pattern scanner
 │   ├── RepositoryService.cs
 │   └── RepositoryUrlParser.cs
 ├── Views/                         # Razor Views & Layouts
 │   ├── Account/ (Login, Register)
 │   ├── Admin/ (Dashboard, Users, Report, Login)
+│   ├── Home/ (Landing, Dashboard, Privacy)
 │   ├── Pipeline/ (Details graph)
-│   ├── Repository/ (Index, Details, Create)
-│   └── Shared/ (_Layout, _AdminNavbar, _UserNavbar, _GuestNavbar)
-├── wwwroot/                       # Static CSS, JavaScript, and Bootstrap assets
-├── DEPLOYGUARD_VIVA_GUIDE.txt     # Complete Viva preparation text guide
-├── DEPLOYGUARD_VIVA_GUIDE.pdf     # Formatted technical reference PDF
-├── appsettings.json               # Database connections and app settings
-├── Dockerfile                     # Container deployment definition
-└── Program.cs                     # DI service registration and middleware pipeline
+│   ├── Repository/ (Index, Details, Create, Edit)
+│   ├── Scan/ (History, Details)
+│   └── Shared/ (_Layout, _GuestNavbar, _UserNavbar, _AdminNavbar)
+├── wwwroot/                       # Static assets (CSS, JS, Logo images, Bootstrap)
+│   ├── images/logo.png            # Official DeployGuard Logo
+│   ├── css/site.css               # Global design tokens and theme engine
+│   └── js/site.js                 # Theme switcher, UTC time formatters, global loader
+├── appsettings.json               # App configuration & connection strings
+├── Program.cs                     # DI service registrations, EF migrations & middleware
+└── Dockerfile                     # Production container deployment definition
 ```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Git CLI](https://git-scm.com/) installed and available on system `PATH`
+- [Git CLI](https://git-scm.com/) installed and on system `PATH`
 - [PostgreSQL](https://www.postgresql.org/) (or SQLite)
 
 ### 1. Clone the Repository
@@ -166,8 +158,8 @@ git clone https://github.com/jay240322/Deploy-Guard.git
 cd Deployguard
 ```
 
-### 2. Configure Database Connection
-Update `appsettings.json` with your connection string:
+### 2. Configure Connection String
+Update `appsettings.json` with your database credentials:
 ```json
 {
   "ConnectionStrings": {
@@ -176,53 +168,42 @@ Update `appsettings.json` with your connection string:
 }
 ```
 
-### 3. Apply Migrations & Build
-```bash
-dotnet restore
-dotnet ef database update
+### 3. Build & Run
+```powershell
+# Restore dependencies and build
 dotnet build
+
+# Launch application on HTTPS
+dotnet run --launch-profile "https"
 ```
 
-### 4. Run the Application
-```bash
-dotnet run --launch-profile https
-```
-The application will start on `https://localhost:7270` or `http://localhost:5044`.
+Access the application in your browser:
+- **HTTPS**: `https://localhost:7270`
+- **HTTP**: `http://localhost:5044`
 
 ---
 
-## ⚙️ How It Works Under the Hood
+## ⚙️ How It Works
 
-### 1. Shallow Git Ingestion
-When a user registers and triggers a scan for a repository:
-```csharp
-// RepositoryCloneService.cs executes shallow clone
-var arguments = $"clone --depth 1 \"{repositoryUrl}\" \"{targetDirectory}\"";
+### 1. Sandboxed Shallow Ingestion
+When a scan is triggered, DeployGuard clones only the tip commit snapshot without past commit histories:
+```bash
+git clone --depth 1 "<repository-url>" "<sandbox-temp-directory>"
 ```
-This downloads only the tip commit snapshot without past commit histories, completing ingestion in **under 1 second**.
+This enables repository ingestion in **under 1 second** while keeping server memory footprints minimal.
 
-### 2. Secret Scanner & Regex Heuristics
-The engine reads text files line-by-line, excluding `.git` internal objects and binary files (`.png`, `.exe`, `.zip`, `.pdf`, `.dll`), evaluating matches against 16+ predefined security patterns:
-- **AWS Keys**: `\bAKIA[0-9A-Z]{16}\b`
-- **GitHub PATs**: `\bgh[pousr]_[A-Za-z0-9_]{36,}\b`
-- **Stripe Keys**: `\bsk_live_[A-Za-z0-9]{20,}\b`
-- **Database Passwords**: `(?i)(db|mysql|postgres)[_-]?(password|pwd)[\s:=]+['"][^'"]{6,}['"]`
-- **Private RSA Keys**: `-----BEGIN (RSA|EC|DSA|OPENSSH)? PRIVATE KEY-----`
+### 2. Static Secret Scanning Engine
+The scanner traverses text files while ignoring binary formats (`.png`, `.exe`, `.zip`, `.pdf`, `.dll`) and internal `.git` directories, checking against regex definitions:
+- **AWS Access Keys**: `\bAKIA[0-9A-Z]{16}\b`
+- **GitHub Personal Access Tokens**: `\bgh[pousr]_[A-Za-z0-9_]{36,}\b`
+- **Stripe Secret Keys**: `\bsk_live_[A-Za-z0-9]{20,}\b`
+- **Database Connection URIs**: `(?i)(db|mysql|postgres)[_-]?(password|pwd)[\s:=]+['"][^'"]{6,}['"]`
+- **Private Cryptographic Keys**: `-----BEGIN (RSA|EC|DSA|OPENSSH)? PRIVATE KEY-----`
 
-### 3. CI/CD AST Parser & Visualizer
+### 3. CI/CD AST Parsing & Dependency Mapping
 1. `PipelineDetectionService` discovers workflow files (`.github/workflows/*.yml`, `Jenkinsfile`).
-2. `PipelineParserService` uses **YamlDotNet** to construct an AST, extracting jobs, dependencies (`needs`), parallel flags, and conditional clauses (`if`).
-3. The UI renders an interactive Directed Acyclic Graph (DAG) with status badges and dependency arrows inside a custom scroll viewport.
-
-### 4. Vector PDF Audit Reports
-Using **QuestPDF**, vector-based PDF audit reports are compiled in memory without headless browsers:
-- Executive Summary & Risk Radar (Critical, High, Medium, Low)
-- Comprehensive Findings Table with File Paths & Line Numbers
-- Developer Remediation Guidance
-
-### 5. Hybrid Authentication
-- **Local Credentials**: Hashed with `PasswordHasher<AppUser>` (PBKDF2) and validated via ASP.NET Core Cookie Authentication.
-- **Google SSO**: Integrated with Firebase Client SDK popup OAuth 2.0, communicating with `/Account/GoogleLogin` for automatic account provisioning.
+2. `PipelineParserService` utilizes **YamlDotNet** to construct an AST, extracting jobs, dependencies (`needs`), parallel flags, and conditional clauses (`if`).
+3. The UI renders an interactive Directed Acyclic Graph (DAG) with visual status indicators.
 
 ---
 
@@ -297,8 +278,23 @@ erDiagram
 
 ---
 
-## 📄 License & Author
+## 👨‍💻 Author & Contact
 
-- **Author**: Jay ([@jay240322](https://github.com/jay240322))
-- **Project**: DeployGuard Security Platform
-- **License**: MIT License
+<div align="center">
+
+  **Engineered by Jay Patel**  
+  *Enterprise Security & DevSecOps Engineering*
+
+  [![Portfolio](https://img.shields.io/badge/Portfolio-WWW.jaypatel.online-0284c7?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.jaypatel.online)
+  [![GitHub](https://img.shields.io/badge/GitHub-jay240322-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jay240322)
+  [![Email](https://img.shields.io/badge/Email-pateljay0j%40gmail.com-ea4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:pateljay0j@gmail.com)
+
+  📍 *Ahmedabad, Gujarat, India*
+
+</div>
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.

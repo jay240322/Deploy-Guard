@@ -8,15 +8,15 @@
     var isScan = currentCtrl.Equals("Scan", StringComparison.OrdinalIgnoreCase);
 }
 
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow sticky-top mb-3 py-2">
+<nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-0 py-1">
 
-    <div class="container-fluid">
+    <div class="container-fluid px-3 px-md-4 px-xl-5 d-flex align-items-center">
 
-        <a class="navbar-brand fw-bold d-flex align-items-center gap-2"
+        <a class="navbar-brand fw-bold d-flex align-items-center gap-2 py-0"
            asp-controller="Home"
            asp-action="Index">
-            <i class="bi bi-shield-lock-fill text-primary"></i>
-            DeployGuard
+            <img src="~/images/logo.png" alt="DeployGuard Logo" class="brand-logo rounded-circle shadow-xs" width="30" height="30" />
+            <span>DeployGuard</span>
         </a>
 
         <button class="navbar-toggler"
@@ -31,12 +31,12 @@
 
         </button>
 
-        <div class="collapse navbar-collapse" id="userNavbar">
+        <div class="collapse navbar-collapse align-items-center" id="userNavbar">
 
-            <ul class="navbar-nav me-auto gap-1">
+            <ul class="navbar-nav me-auto gap-1 align-items-center">
 
                 <li class="nav-item">
-                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isHome ? "active-nav-link" : "")"
+                    <a class="nav-link px-3 py-1.5 rounded-3 d-flex align-items-center gap-2 @(isHome ? "active-nav-link" : "")"
                        asp-controller="Home"
                        asp-action="Index">
                         <i class="bi bi-speedometer2"></i>
@@ -45,7 +45,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isRepository ? "active-nav-link" : "")"
+                    <a class="nav-link px-3 py-1.5 rounded-3 d-flex align-items-center gap-2 @(isRepository ? "active-nav-link" : "")"
                        asp-controller="Repository"
                        asp-action="Index">
                         <i class="bi bi-folder"></i>
@@ -54,7 +54,7 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link px-3 py-2 rounded-3 d-flex align-items-center gap-2 @(isScan ? "active-nav-link" : "")"
+                    <a class="nav-link px-3 py-1.5 rounded-3 d-flex align-items-center gap-2 @(isScan ? "active-nav-link" : "")"
                        asp-controller="Scan"
                        asp-action="History">
                         <i class="bi bi-shield-check"></i>

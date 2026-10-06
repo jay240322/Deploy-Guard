@@ -342,27 +342,40 @@ public class AdminController : Controller
         var failedScansCount = await _context.SecretScans.CountAsync(s => s.Status == "Failed");
         var runningScansCount = await _context.SecretScans.CountAsync(s => s.Status == "Running");
 
-        // Calculate risk per repository
+        // Calculate risk per repository from the latest completed scan
         var repositories = await _context.Repositories
             .Include(r => r.CreatedByUser)
             .Include(r => r.SecretScans)
                 .ThenInclude(s => s.Findings)
+                    .ThenInclude(f => f.SecretRule)
             .ToListAsync();
 
         var riskyRepositories = new List<AdminRepositoryRiskViewModel>();
+        var activeFindingsList = new List<SecretFinding>();
 
         foreach (var repo in repositories)
         {
-            var allFindings = repo.SecretScans
-                .SelectMany(s => s.Findings)
-                .ToList();
+            // Use the latest completed scan (or latest scan) for accurate and deterministic risk evaluation
+            var latestScan = repo.SecretScans
+                .Where(s => s.Status == "Completed")
+                .OrderByDescending(s => s.StartedAt)
+                .FirstOrDefault()
+                ?? repo.SecretScans
+                    .OrderByDescending(s => s.StartedAt)
+                    .FirstOrDefault();
 
-            var crit = allFindings.Count(f => f.Severity == "Critical");
-            var high = allFindings.Count(f => f.Severity == "High");
-            var med = allFindings.Count(f => f.Severity == "Medium");
-            var low = allFindings.Count(f => f.Severity == "Low");
+            var currentFindings = latestScan?.Findings
+                .Where(f => !f.IsFalsePositive)
+                .ToList() ?? new List<SecretFinding>();
 
-            var totalSec = allFindings.Count;
+            activeFindingsList.AddRange(currentFindings);
+
+            var crit = currentFindings.Count(f => string.Equals(f.Severity, "Critical", StringComparison.OrdinalIgnoreCase));
+            var high = currentFindings.Count(f => string.Equals(f.Severity, "High", StringComparison.OrdinalIgnoreCase));
+            var med = currentFindings.Count(f => string.Equals(f.Severity, "Medium", StringComparison.OrdinalIgnoreCase));
+            var low = currentFindings.Count(f => string.Equals(f.Severity, "Low", StringComparison.OrdinalIgnoreCase));
+
+            var totalSec = currentFindings.Count;
             var riskScore = (crit * 10) + (high * 5) + (med * 2) + (low * 1);
 
             string riskLevel;
@@ -374,6 +387,8 @@ public class AdminController : Controller
                 riskLevel = "Moderate Risk";
             else if (totalSec > 0)
                 riskLevel = "Low Risk";
+            else if (latestScan != null && latestScan.Status == "Completed")
+                riskLevel = "Clean";
             else
                 riskLevel = "Safe";
 
@@ -404,9 +419,8 @@ public class AdminController : Controller
             .ThenByDescending(r => r.TotalSecrets)
             .ToList();
 
-        // Top detected secret rules
-        var topSecretTypes = await _context.SecretFindings
-            .Include(f => f.SecretRule)
+        // Top detected secret rules across active repository scans
+        var topSecretTypes = activeFindingsList
             .GroupBy(f => new { f.SecretRuleId, RuleName = f.SecretRule != null ? f.SecretRule.Name : "Custom Rule", f.Severity })
             .Select(g => new AdminSecretTypeSummaryViewModel
             {
@@ -416,12 +430,12 @@ public class AdminController : Controller
             })
             .OrderByDescending(t => t.Count)
             .Take(10)
-            .ToListAsync();
+            .ToList();
 
-        var criticalTotal = await _context.SecretFindings.CountAsync(f => f.Severity == "Critical");
-        var highTotal = await _context.SecretFindings.CountAsync(f => f.Severity == "High");
-        var mediumTotal = await _context.SecretFindings.CountAsync(f => f.Severity == "Medium");
-        var lowTotal = await _context.SecretFindings.CountAsync(f => f.Severity == "Low");
+        var criticalTotal = activeFindingsList.Count(f => string.Equals(f.Severity, "Critical", StringComparison.OrdinalIgnoreCase));
+        var highTotal = activeFindingsList.Count(f => string.Equals(f.Severity, "High", StringComparison.OrdinalIgnoreCase));
+        var mediumTotal = activeFindingsList.Count(f => string.Equals(f.Severity, "Medium", StringComparison.OrdinalIgnoreCase));
+        var lowTotal = activeFindingsList.Count(f => string.Equals(f.Severity, "Low", StringComparison.OrdinalIgnoreCase));
 
         return new AdminReportViewModel
         {
@@ -429,7 +443,7 @@ public class AdminController : Controller
             TotalUsers = totalUsers,
             TotalRepositories = totalRepos,
             TotalScans = totalScans,
-            TotalSecretsFound = totalSecrets,
+            TotalSecretsFound = riskyRepositories.Sum(r => r.TotalSecrets),
             TotalFilesScanned = totalFiles,
             TotalScanDurationSeconds = totalDurationSec,
             AverageScanDurationSeconds = avgDurationSec,

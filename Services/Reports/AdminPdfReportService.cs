@@ -38,7 +38,7 @@ public class AdminPdfReportService
                                     .Column(c =>
                                     {
                                         c.Item().Text($"Generated (UTC):").FontSize(8).FontColor(Colors.Grey.Medium);
-                                        c.Item().Text($"{report.GeneratedAt:dd MMM yyyy HH:mm}").FontSize(9).Bold();
+                                        c.Item().Text($"{report.GeneratedAt:dd MMM yyyy, hh:mm tt}").FontSize(9).Bold();
                                         c.Item().Text("Confidential • Admin Only").FontSize(8).FontColor(Colors.Red.Darken2).SemiBold();
                                     });
                             });

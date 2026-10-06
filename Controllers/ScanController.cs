@@ -87,8 +87,9 @@ public class ScanController : Controller
             return Forbid();
         }
 
-        var scans = await _scanService.GetUserScansAsync(
-            userId);
+        var scans = User.IsInRole("Admin")
+            ? await _scanService.GetAllScansAsync()
+            : await _scanService.GetUserScansAsync(userId);
 
         return View(scans);
     }

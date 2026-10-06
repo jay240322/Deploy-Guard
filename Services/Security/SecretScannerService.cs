@@ -33,6 +33,7 @@ public class SecretScannerService
         var rules = await _context.SecretRules
             .AsNoTracking()
             .Where(r => r.IsActive)
+            .OrderBy(r => r.Id)
             .ToListAsync();
 
         var result = new SecretScanResult();
@@ -40,7 +41,9 @@ public class SecretScannerService
         var files = Directory.EnumerateFiles(
             repositoryPath,
             "*",
-            SearchOption.AllDirectories);
+            SearchOption.AllDirectories)
+            .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
         foreach (var filePath in files)
         {
@@ -138,16 +141,26 @@ public class SecretScannerService
                             repositoryPath,
                             filePath);
 
-                    result.Findings.Add(
-                        new SecretFindingResult
-                        {
-                            SecretRuleId = rule.Id,
-                            FilePath = relativePath,
-                            LineNumber = lineIndex + 1,
-                            MaskedValue =
-                                MaskSecret(match.Value),
-                            Severity = rule.Severity
-                        });
+                    var masked = MaskSecret(match.Value);
+
+                    var alreadyExists = result.Findings.Any(f =>
+                        f.SecretRuleId == rule.Id &&
+                        f.FilePath == relativePath &&
+                        f.LineNumber == lineIndex + 1 &&
+                        f.MaskedValue == masked);
+
+                    if (!alreadyExists)
+                    {
+                        result.Findings.Add(
+                            new SecretFindingResult
+                            {
+                                SecretRuleId = rule.Id,
+                                FilePath = relativePath,
+                                LineNumber = lineIndex + 1,
+                                MaskedValue = masked,
+                                Severity = rule.Severity
+                            });
+                    }
                 }
             }
         }

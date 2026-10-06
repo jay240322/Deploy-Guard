@@ -23,31 +23,44 @@
 
         <!-- Management Actions: Back, Edit, Delete -->
         <div class="d-flex flex-wrap align-items-center gap-2">
-            <!-- Back to Repositories -->
-            <a asp-controller="Repository"
-               asp-action="Index"
-               class="btn btn-outline-secondary d-flex align-items-center gap-1 shadow-sm">
-                <i class="bi bi-arrow-left"></i>
-                <span>Back to Repositories</span>
-            </a>
+            @if (User.IsInRole("Admin"))
+            {
+                <!-- Back to Platform Report for Admin -->
+                <a asp-controller="Admin"
+                   asp-action="Report"
+                   class="btn btn-outline-secondary d-flex align-items-center gap-1 shadow-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Back to Report</span>
+                </a>
+            }
+            else
+            {
+                <!-- Back to Repositories for Regular Users -->
+                <a asp-controller="Repository"
+                   asp-action="Index"
+                   class="btn btn-outline-secondary d-flex align-items-center gap-1 shadow-sm">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Back to Repositories</span>
+                </a>
 
-            <!-- Edit Repository -->
-            <a asp-controller="Repository"
-               asp-action="Edit"
-               asp-route-id="@Model.Id"
-               class="btn btn-warning text-dark fw-semibold d-flex align-items-center gap-1 shadow-sm">
-                <i class="bi bi-pencil-square"></i>
-                <span>Edit</span>
-            </a>
+                <!-- Edit Repository -->
+                <a asp-controller="Repository"
+                   asp-action="Edit"
+                   asp-route-id="@Model.Id"
+                   class="btn btn-warning text-dark fw-semibold d-flex align-items-center gap-1 shadow-sm">
+                    <i class="bi bi-pencil-square"></i>
+                    <span>Edit</span>
+                </a>
 
-            <!-- Delete Repository -->
-            <button type="button"
-                    class="btn btn-outline-danger d-flex align-items-center gap-1 shadow-sm"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteRepositoryModal">
-                <i class="bi bi-trash3"></i>
-                <span>Delete</span>
-            </button>
+                <!-- Delete Repository -->
+                <button type="button"
+                        class="btn btn-outline-danger d-flex align-items-center gap-1 shadow-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteRepositoryModal">
+                    <i class="bi bi-trash3"></i>
+                    <span>Delete</span>
+                </button>
+            }
         </div>
     </div>
 
@@ -155,7 +168,7 @@
                         <i class="bi bi-calendar-check me-1"></i> Registered At
                     </div>
                     <div class="text-dark">
-                        @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                        @Model.CreatedAt.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
                     </div>
                 </div>
 
@@ -168,7 +181,7 @@
                         @if (Model.LastScannedAt.HasValue)
                         {
                             <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
-                                <i class="bi bi-check-circle me-1"></i> @Model.LastScannedAt.Value.ToLocalTime().ToString("dd MMM yyyy HH:mm")
+                                <i class="bi bi-check-circle me-1"></i> @Model.LastScannedAt.Value.ToLocalTime().ToString("dd MMM yyyy, hh:mm tt")
                             </span>
                         }
                         else
@@ -193,7 +206,7 @@
                         Operations & Pipeline Analysis
                     </h5>
                     <small class="text-muted">
-                        Trigger security scans, analyze pipelines, and inspect audit reports.
+                        @(User.IsInRole("Admin") ? "Inspect pipeline configurations and vulnerability audit reports." : "Trigger security scans, analyze pipelines, and inspect audit reports.")
                     </small>
                 </div>
             </div>
@@ -201,31 +214,34 @@
 
         <div class="card-body p-4">
             <div class="d-flex flex-wrap align-items-center gap-3">
-                <!-- Scan Repository Button (Primary action) -->
-                <form asp-controller="Scan"
-                      asp-action="Start"
-                      method="post"
-                      class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="repositoryId" value="@Model.Id" />
-                    <button type="submit" class="btn btn-success fw-semibold px-4 py-2 shadow-sm d-flex align-items-center gap-2">
-                        <i class="bi bi-shield-check fs-5"></i>
-                        <span>Scan Repository</span>
-                    </button>
-                </form>
+                @if (!User.IsInRole("Admin"))
+                {
+                    <!-- Scan Repository Button (Primary action for regular users) -->
+                    <form asp-controller="Scan"
+                          asp-action="Start"
+                          method="post"
+                          class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="repositoryId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-success fw-semibold px-4 py-2 shadow-sm d-flex align-items-center gap-2">
+                            <i class="bi bi-shield-check fs-5"></i>
+                            <span>Scan Repository</span>
+                        </button>
+                    </form>
 
-                <!-- Refresh Metadata Button -->
-                <form asp-controller="Repository"
-                      asp-action="RefreshMetadata"
-                      asp-route-id="@Model.Id"
-                      method="post"
-                      class="d-inline">
-                    @Html.AntiForgeryToken()
-                    <button type="submit" class="btn btn-outline-primary fw-medium px-3 py-2 d-flex align-items-center gap-2">
-                        <i class="bi bi-arrow-clockwise fs-5"></i>
-                        <span>Refresh Metadata</span>
-                    </button>
-                </form>
+                    <!-- Refresh Metadata Button -->
+                    <form asp-controller="Repository"
+                          asp-action="RefreshMetadata"
+                          asp-route-id="@Model.Id"
+                          method="post"
+                          class="d-inline">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-primary fw-medium px-3 py-2 d-flex align-items-center gap-2">
+                            <i class="bi bi-arrow-clockwise fs-5"></i>
+                            <span>Refresh Metadata</span>
+                        </button>
+                    </form>
+                }
 
                 <!-- View Pipeline Button (Only available if repository has been scanned) -->
                 @if (hasBeenScanned)
@@ -254,7 +270,14 @@
                 <div class="alert alert-info d-flex align-items-center gap-3 mt-4 mb-0 border-0 bg-info-subtle text-info-emphasis rounded-3">
                     <i class="bi bi-info-circle-fill fs-4 flex-shrink-0"></i>
                     <div>
-                        <strong>Scan required:</strong> Click <strong>Scan Repository</strong> above to analyze CI/CD configuration files, visualize pipeline execution flow, and detect security vulnerabilities.
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <span>This repository has not been scanned by the owner yet. Pipeline and vulnerability analysis reports will be generated once scanned.</span>
+                        }
+                        else
+                        {
+                            <span><strong>Scan required:</strong> Click <strong>Scan Repository</strong> above to analyze CI/CD configuration files, visualize pipeline execution flow, and detect security vulnerabilities.</span>
+                        }
                     </div>
                 </div>
             }

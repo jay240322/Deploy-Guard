@@ -36,7 +36,7 @@ public class PdfReportService
 
                         header.Item()
                             .Text(
-                                $"Generated: {report.GeneratedAt.ToLocalTime():dd MMM yyyy HH:mm}")
+                                $"Generated: {report.GeneratedAt.ToLocalTime():dd MMM yyyy, hh:mm tt}")
                             .FontSize(9)
                             .FontColor(Colors.Grey.Darken1);
                     });

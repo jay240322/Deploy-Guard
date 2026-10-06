@@ -15,9 +15,9 @@ LoadDotEnv();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure port for Render and container environments
+// Configure port for Render and container environments (Production / Cloud)
 var port = Environment.GetEnvironmentVariable("PORT");
-if (!string.IsNullOrEmpty(port))
+if (!string.IsNullOrEmpty(port) && !builder.Environment.IsDevelopment())
 {
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 }

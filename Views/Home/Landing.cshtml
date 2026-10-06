@@ -1,5 +1,6 @@
 @{
     ViewData["Title"] = "DeployGuard - Enterprise DevSecOps & Secret Scanner";
+    ViewData["HideFooter"] = true;
 }
 
 <!-- HERO SECTION -->
@@ -12,7 +13,7 @@
                 
                 <!-- Badge -->
                 <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-primary-subtle text-primary border border-primary-subtle mb-3 fs-6 fw-medium shadow-sm">
-                    <i class="bi bi-shield-check"></i>
+                    <img src="~/images/logo.png" alt="DeployGuard Logo" width="20" height="20" class="rounded-circle shadow-xs" />
                     <span>Next-Gen Security & DevSecOps Intelligence</span>
                 </div>
 
@@ -295,55 +296,6 @@
     </div>
 </section>
 
-<!-- SECURITY RULES & COMPLIANCE SECTION -->
-<section class="py-5 py-lg-6 bg-subtle" id="security-rules">
-    <div class="container">
-        
-        <div class="text-center max-w-700 mx-auto mb-5">
-            <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill mb-2 fw-medium">
-                Security Rules & Coverage
-            </span>
-            <h2 class="display-6 fw-bold text-main mb-3">
-                Comprehensive Secret Rule Engine
-            </h2>
-            <p class="text-muted fs-5">
-                DeployGuard inspects code with built-in heuristic and regex pattern definitions covering enterprise services.
-            </p>
-        </div>
-
-        <div class="row g-3">
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-card h-100">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <i class="bi bi-cloud-check-fill fs-3 text-primary"></i>
-                        <h6 class="fw-bold text-main mb-0">Cloud & Infrastructure</h6>
-                    </div>
-                    <p class="small text-muted mb-0">AWS Access Keys, Azure Secrets, GCP Service Accounts, DigitalOcean Personal Tokens.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-card h-100">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <i class="bi bi-credit-card-2-front-fill fs-3 text-success"></i>
-                        <h6 class="fw-bold text-main mb-0">Payment & Communication</h6>
-                    </div>
-                    <p class="small text-muted mb-0">Stripe Secret Keys, PayPal Tokens, Twilio API Keys, Slack Incoming Webhooks.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card border-0 shadow-sm rounded-4 p-3 bg-card h-100">
-                    <div class="d-flex align-items-center gap-3 mb-2">
-                        <i class="bi bi-database-fill-lock fs-3 text-warning"></i>
-                        <h6 class="fw-bold text-main mb-0">Databases & Keys</h6>
-                    </div>
-                    <p class="small text-muted mb-0">PostgreSQL / MySQL URLs, MongoDB URIs, RSA/SSH Private Keys, JWT Signing Secrets.</p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-</section>
-
 <!-- HOW IT WORKS SECTION -->
 <section class="py-5 py-lg-6" id="how-it-works">
     <div class="container">
@@ -433,6 +385,103 @@
         </div>
     </div>
 </section>
+
+<!-- RICH LANDING PAGE FOOTER -->
+<footer class="landing-footer py-5 border-top position-relative" style="background-color: var(--card-bg);">
+    <div class="container">
+        <div class="row g-4 justify-content-between mb-4">
+            
+            <!-- Column 1: Brand & Bio -->
+            <div class="col-lg-4">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <img src="~/images/logo.png" alt="DeployGuard" width="36" height="36" class="rounded-circle shadow-sm" />
+                    <span class="fs-4 fw-bold text-main tracking-tight">DeployGuard</span>
+                </div>
+                <p class="text-muted small mb-4" style="line-height: 1.6;">
+                    Enterprise DevSecOps platform and security intelligence engine for detecting exposed secrets, leaked API credentials, and CI/CD pipeline vulnerabilities before deployment.
+                </p>
+                <div class="d-flex align-items-center gap-2">
+                    <a href="https://github.com/jay240322" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="GitHub Profile">
+                        <i class="bi bi-github"></i>
+                    </a>
+                    <a href="https://www.jaypatel.online" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Personal Portfolio">
+                        <i class="bi bi-globe2"></i>
+                    </a>
+                    <a href="mailto:pateljay0j@gmail.com" class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="Send Email">
+                        <i class="bi bi-envelope-fill"></i>
+                    </a>
+                    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;" title="LinkedIn">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Column 2: Platform Links -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <h6 class="fw-bold text-main mb-3 text-uppercase small" style="letter-spacing: 0.5px;">Platform</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2 small mb-0">
+                    <li><a href="/#features" class="text-muted text-decoration-none">Core Features</a></li>
+                    <li><a href="/#how-it-works" class="text-muted text-decoration-none">How It Works</a></li>
+                    <li><a href="/#integrations" class="text-muted text-decoration-none">Git Integrations</a></li>
+                    <li><a asp-controller="Account" asp-action="Register" class="text-muted text-decoration-none">Get Started Free</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 3: Security & Portals -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <h6 class="fw-bold text-main mb-3 text-uppercase small" style="letter-spacing: 0.5px;">Security</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2 small mb-0">
+                    <li><a href="/#features" class="text-muted text-decoration-none">Secret Detection</a></li>
+                    <li><a href="/#features" class="text-muted text-decoration-none">Pipeline Auditing</a></li>
+                    <li><a href="/#features" class="text-muted text-decoration-none">PDF Intelligence</a></li>
+                    <li><a asp-controller="Admin" asp-action="Login" class="text-muted text-decoration-none">Admin Governance</a></li>
+                    <li><a asp-controller="Home" asp-action="Privacy" class="text-muted text-decoration-none">Privacy & Security</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Contact & Details -->
+            <div class="col-md-6 col-lg-3">
+                <h6 class="fw-bold text-main mb-3 text-uppercase small" style="letter-spacing: 0.5px;">Contact Info</h6>
+                <ul class="list-unstyled d-flex flex-column gap-2 small mb-0 text-muted">
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-envelope-fill text-danger mt-1"></i>
+                        <a href="mailto:pateljay0j@gmail.com" class="text-muted text-decoration-none">pateljay0j@gmail.com</a>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-globe text-primary mt-1"></i>
+                        <a href="https://www.jaypatel.online" target="_blank" rel="noopener noreferrer" class="text-muted text-decoration-none">WWW.jaypatel.online</a>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-geo-alt-fill text-success mt-1"></i>
+                        <span>Ahmedabad, Gujarat, India</span>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-github text-main mt-1"></i>
+                        <a href="https://github.com/jay240322" target="_blank" rel="noopener noreferrer" class="text-muted text-decoration-none">GitHub: @@jay240322</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <hr class="border-secondary opacity-25 my-4" />
+
+        <!-- Bottom Copyright -->
+        <div class="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3 small text-muted">
+            <div>
+                &copy; 2026 <strong>DeployGuard</strong> • Engineered by <strong>Jay Patel</strong>. All rights reserved.
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a href="https://www.jaypatel.online" target="_blank" rel="noopener noreferrer" class="text-muted text-decoration-none">Portfolio</a>
+                <span>•</span>
+                <a href="https://github.com/jay240322/Deploy-Guard" target="_blank" rel="noopener noreferrer" class="text-muted text-decoration-none">Source Code</a>
+                <span>•</span>
+                <a asp-controller="Home" asp-action="Privacy" class="text-muted text-decoration-none">Privacy Policy</a>
+            </div>
+        </div>
+
+    </div>
+</footer>
 
 <style>
     /* Landing Hero Styles */
