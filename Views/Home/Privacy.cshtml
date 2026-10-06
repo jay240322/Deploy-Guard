@@ -1,6 +1,305 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+@{
+    ViewData["Title"] = "Privacy Policy & Security Governance";
 }
-<h1>@ViewData["Title"]</h1>
 
-<p>Use this page to detail your site's privacy policy.</p>
+<div class="py-4 py-lg-5">
+    <div class="container">
+
+        <!-- HEADER / HERO -->
+        <div class="text-center max-w-800 mx-auto mb-5">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-primary-subtle text-primary border border-primary-subtle mb-3 fs-6 fw-medium shadow-xs">
+                <img src="~/images/logo.png" alt="DeployGuard" width="22" height="22" class="rounded-circle shadow-xs" />
+                <span>Enterprise Security & Data Protection Governance</span>
+            </div>
+            <h1 class="display-5 fw-extrabold text-main mb-3 tracking-tight">
+                Privacy Policy & Security Architecture
+            </h1>
+            <p class="lead text-muted fs-5 mb-3" style="line-height: 1.6;">
+                Learn how DeployGuard protects your source code, isolates shallow Git scans, and ensures zero persistent retention of exposed credentials.
+            </p>
+            <div class="d-flex items-center justify-content-center gap-3 small text-muted">
+                <span><i class="bi bi-shield-check text-success me-1"></i> ISO/IEC Aligned</span>
+                <span>•</span>
+                <span><i class="bi bi-clock-history me-1"></i> Last Updated: October 2026</span>
+                <span>•</span>
+                <span><i class="bi bi-lock-fill text-primary me-1"></i> Zero Raw Code Retention</span>
+            </div>
+        </div>
+
+        <!-- 4 CORE SECURITY PILLARS -->
+        <div class="row g-4 mb-5">
+            
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-card hover-lift">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-primary-subtle text-primary mb-3" style="width: 48px; height: 48px;">
+                        <i class="bi bi-trash3-fill fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-main mb-2">Zero Code Retention</h5>
+                    <p class="text-muted small mb-0" style="line-height: 1.6;">
+                        Repositories are shallow-cloned (<span class="font-monospace text-primary">--depth 1</span>) into ephemeral temporary sandboxes. All source files are completely purged from disk immediately upon scan completion.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-card hover-lift">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-success-subtle text-success mb-3" style="width: 48px; height: 48px;">
+                        <i class="bi bi-eye-slash-fill fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-main mb-2">Defense Secret Masking</h5>
+                    <p class="text-muted small mb-0" style="line-height: 1.6;">
+                        Raw tokens and database passwords are never stored in plain text. Discovered secrets are immediately redacted (e.g. <span class="font-monospace text-success">AKIA****************1234</span>) before database insertion.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-card hover-lift">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-warning-subtle text-warning mb-3" style="width: 48px; height: 48px;">
+                        <i class="bi bi-shield-shaded fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-main mb-2">Sandboxed Scans</h5>
+                    <p class="text-muted small mb-0" style="line-height: 1.6;">
+                        All AST parsing and regex heuristic scans execute in unprivileged process isolations without external network callbacks or arbitrary code execution capabilities.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 bg-card hover-lift">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-3 bg-info-subtle text-info mb-3" style="width: 48px; height: 48px;">
+                        <i class="bi bi-key-fill fs-4"></i>
+                    </div>
+                    <h5 class="fw-bold text-main mb-2">Cryptographic Auth</h5>
+                    <p class="text-muted small mb-0" style="line-height: 1.6;">
+                        User authentication is safeguarded with salted PBKDF2 hashing, secure cookie flags, and verified Google OAuth 2.0 Single Sign-On tokens.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SECTION 1: INGESTION & DATA FLOW -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-5 bg-card">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-6">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-primary-subtle text-primary border border-primary-subtle mb-3 small fw-semibold">
+                        <i class="bi bi-diagram-3-fill"></i> Data Processing Lifecycle
+                    </div>
+                    <h3 class="fw-bold text-main mb-3">How We Handle Your Repositories</h3>
+                    <p class="text-muted" style="line-height: 1.7;">
+                        DeployGuard is engineered specifically to prevent the common privacy and liability pitfalls associated with cloud security tools. We treat your proprietary source code with the highest tier of confidentiality:
+                    </p>
+                    <ul class="list-unstyled d-flex flex-column gap-3 text-muted">
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                            <span><strong>No Permanent File Storage:</strong> We do not keep copies of your repository files, commit logs, or documentation in our databases or storage buckets.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                            <span><strong>Metadata Only Retention:</strong> Only high-level scan metadata (file path, line number, rule name, severity, masked snippet) is persisted for report generation.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                            <span><strong>Instant Deletion on Request:</strong> When you delete a repository from your dashboard, all associated scans and finding metadata are permanently purged.</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <div class="p-4 rounded-4 bg-body border border-secondary border-opacity-10 shadow-sm">
+                        <h6 class="fw-bold text-main mb-3 text-uppercase small" style="letter-spacing: 0.5px;">
+                            <i class="bi bi-cpu-fill text-primary me-1"></i> Ingestion Timeline
+                        </h6>
+                        <div class="timeline d-flex flex-column gap-3">
+                            <div class="d-flex gap-3">
+                                <div class="step-num rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; min-width: 28px; font-size: 0.8rem;">1</div>
+                                <div>
+                                    <h6 class="fw-bold text-main mb-1 fs-6">Shallow Clone Ingestion</h6>
+                                    <p class="small text-muted mb-0">Repository is cloned into a unique GUID-named temporary folder using <span class="font-monospace text-primary">--depth 1</span>.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-3">
+                                <div class="step-num rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; min-width: 28px; font-size: 0.8rem;">2</div>
+                                <div>
+                                    <h6 class="fw-bold text-main mb-1 fs-6">Static Pattern & AST Analysis</h6>
+                                    <p class="small text-muted mb-0">Files are parsed line-by-line; binary files (<span class="font-monospace">.png, .exe, .dll, .pdf</span>) and <span class="font-monospace">.git</span> objects are automatically ignored.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-3">
+                                <div class="step-num rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-bold" style="width: 28px; height: 28px; min-width: 28px; font-size: 0.8rem;">3</div>
+                                <div>
+                                    <h6 class="fw-bold text-main mb-1 fs-6">Masking & Persistence</h6>
+                                    <p class="small text-muted mb-0">Matches are redacted before saving to the database. Ephemeral sandbox folder is forcefully deleted via <span class="font-monospace text-danger">Directory.Delete(true)</span>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: SECRET DETECTION COVERAGE & CHECKS -->
+        <div class="mb-5">
+            <div class="text-center max-w-700 mx-auto mb-4">
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 rounded-pill mb-2 fw-medium">
+                    Rule Engine & Checks
+                </span>
+                <h3 class="fw-bold text-main mb-2">Automated Security Scans & Rules</h3>
+                <p class="text-muted small">
+                    DeployGuard executes regex pattern evaluations across the following enterprise credentials categories:
+                </p>
+            </div>
+
+            <div class="row g-3">
+                
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3.5 bg-card">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-cloud-check-fill fs-4 text-primary"></i>
+                            <h6 class="fw-bold text-main mb-0">Cloud & Infrastructure</h6>
+                        </div>
+                        <ul class="list-unstyled small text-muted mb-0 d-flex flex-column gap-1.5">
+                            <li>• AWS Access Key ID (<span class="font-monospace text-primary">AKIA...</span>) & Secret Access Keys</li>
+                            <li>• Azure Storage Account Keys & Tenant Secrets</li>
+                            <li>• Google Cloud Platform (GCP) Service Account Keys</li>
+                            <li>• DigitalOcean & Linode Personal Access Tokens</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3.5 bg-card">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-credit-card-2-front-fill fs-4 text-success"></i>
+                            <h6 class="fw-bold text-main mb-0">Payments & Webhooks</h6>
+                        </div>
+                        <ul class="list-unstyled small text-muted mb-0 d-flex flex-column gap-1.5">
+                            <li>• Stripe Live Secret Keys (<span class="font-monospace text-success">sk_live_...</span>)</li>
+                            <li>• PayPal REST API Client Secrets & Bearer Tokens</li>
+                            <li>• Twilio Auth Tokens & SendGrid API Credentials</li>
+                            <li>• Slack Incoming Webhooks & Bot OAuth Tokens</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3.5 bg-card">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-database-fill-lock fs-4 text-warning"></i>
+                            <h6 class="fw-bold text-main mb-0">Databases & Connection URIs</h6>
+                        </div>
+                        <ul class="list-unstyled small text-muted mb-0 d-flex flex-column gap-1.5">
+                            <li>• PostgreSQL & MySQL Connection Strings (<span class="font-monospace text-warning">postgres://...</span>)</li>
+                            <li>• MongoDB Atlas Cluster URIs with embedded passwords</li>
+                            <li>• Redis Auth Passwords & Elasticsearch Connection Strings</li>
+                            <li>• Microsoft SQL Server Database Credentials</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3.5 bg-card">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-key-fill fs-4 text-danger"></i>
+                            <h6 class="fw-bold text-main mb-0">Cryptographic Private Keys</h6>
+                        </div>
+                        <ul class="list-unstyled small text-muted mb-0 d-flex flex-column gap-1.5">
+                            <li>• RSA, DSA & EC Private Keys (<span class="font-monospace">BEGIN PRIVATE KEY</span>)</li>
+                            <li>• OpenSSH Private Keys & PGP Secret Keys</li>
+                            <li>• JSON Web Token (JWT) HMAC Signing Secrets</li>
+                            <li>• SSL/TLS Certificate Private Keys (<span class="font-monospace">.pem, .key</span>)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3.5 bg-card">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-git fs-4 text-info"></i>
+                            <h6 class="fw-bold text-main mb-0">Git & Developer Platforms</h6>
+                        </div>
+                        <ul class="list-unstyled small text-muted mb-0 d-flex flex-column gap-1.5">
+                            <li>• GitHub Personal Access Tokens (<span class="font-monospace text-info">ghp_..., gho_...</span>)</li>
+                            <li>• GitLab Personal & Project Deploy Tokens (<span class="font-monospace text-info">glpat-...</span>)</li>
+                            <li>• Bitbucket App Passwords & Azure DevOps Tokens</li>
+                            <li>• NPM & PyPI Registry Authentication Tokens</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 p-3.5 bg-card">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-diagram-2-fill fs-4 text-secondary"></i>
+                            <h6 class="fw-bold text-main mb-0">CI/CD Pipeline Audits</h6>
+                        </div>
+                        <ul class="list-unstyled small text-muted mb-0 d-flex flex-column gap-1.5">
+                            <li>• GitHub Actions (<span class="font-monospace">.github/workflows/*.yml</span>) AST analysis</li>
+                            <li>• Declarative Jenkinsfiles stage & step parsing</li>
+                            <li>• Unpinned third-party action vulnerability checks</li>
+                            <li>• Unprotected pull request trigger inspections</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- SECTION 3: USER RIGHTS & GOVERNANCE -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-5 bg-card">
+            <h3 class="fw-bold text-main mb-3">User Rights & Governance</h3>
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-main mb-2"><i class="bi bi-person-gear text-primary me-1"></i> Data Ownership & Access</h6>
+                    <p class="text-muted small" style="line-height: 1.6;">
+                        You maintain full ownership of your scan reports and repository metadata. Regular users can only access repositories and scans they created. Administrative governance is restricted to system administrators with strict multi-factor role validation.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-main mb-2"><i class="bi bi-file-earmark-pdf-fill text-danger me-1"></i> PDF Audit Report Privacy</h6>
+                    <p class="text-muted small" style="line-height: 1.6;">
+                        Generated PDF audit reports are compiled on-demand in memory using QuestPDF. Downloaded documents contain only redacted tokens and file line references for security compliance and audit readiness.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTACT & SECURITY DISCLOSURE -->
+        <div class="card border-0 shadow-sm rounded-4 p-4 text-center bg-card">
+            <div class="d-flex align-items-center justify-content-center gap-2 mb-2">
+                <img src="~/images/logo.png" alt="DeployGuard" width="28" height="28" class="rounded-circle shadow-xs" />
+                <h5 class="fw-bold text-main mb-0">Security Contact & Responsible Disclosure</h5>
+            </div>
+            <p class="text-muted small mb-3 max-w-700 mx-auto" style="line-height: 1.6;">
+                If you have questions about DeployGuard's privacy practices, data handling, or wish to report a security vulnerability, please contact our engineering team directly:
+            </p>
+            <div class="d-flex flex-wrap align-items-center justify-content-center gap-3">
+                <a href="mailto:pateljay0j@gmail.com" class="btn btn-primary btn-sm px-3 py-2 rounded-3 fw-semibold d-inline-flex align-items-center gap-2 shadow-sm">
+                    <i class="bi bi-envelope-fill"></i>
+                    <span>pateljay0j@gmail.com</span>
+                </a>
+                <a href="https://www.jaypatel.online" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-3 fw-semibold d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-globe2"></i>
+                    <span>WWW.jaypatel.online</span>
+                </a>
+                <a href="https://github.com/jay240322/Deploy-Guard" target="_blank" rel="noopener noreferrer" class="btn btn-outline-secondary btn-sm px-3 py-2 rounded-3 fw-semibold d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-github"></i>
+                    <span>GitHub Repository</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .max-w-800 {
+        max-width: 800px;
+    }
+    .max-w-700 {
+        max-width: 700px;
+    }
+    .p-3\.5 {
+        padding: 1.15rem;
+    }
+</style>

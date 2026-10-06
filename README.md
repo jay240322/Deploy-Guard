@@ -23,8 +23,7 @@
     <a href="#-technology-stack">Tech Stack</a> •
     <a href="#-quick-start">Quick Start</a> •
     <a href="#-how-it-works">How It Works</a> •
-    <a href="#-database-schema">Database Schema</a> •
-    <a href="#-author--contact">Author</a>
+    <a href="#-database-schema">Database Schema</a>
   </p>
 
 </div>
@@ -275,26 +274,3 @@ erDiagram
         string Condition
     }
 ```
-
----
-
-## 👨‍💻 Author & Contact
-
-<div align="center">
-
-  **Engineered by Jay Patel**  
-  *Enterprise Security & DevSecOps Engineering*
-
-  [![Portfolio](https://img.shields.io/badge/Portfolio-WWW.jaypatel.online-0284c7?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.jaypatel.online)
-  [![GitHub](https://img.shields.io/badge/GitHub-jay240322-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jay240322)
-  [![Email](https://img.shields.io/badge/Email-pateljay0j%40gmail.com-ea4335?style=for-the-badge&logo=gmail&logoColor=white)](mailto:pateljay0j@gmail.com)
-
-  📍 *Ahmedabad, Gujarat, India*
-
-</div>
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
