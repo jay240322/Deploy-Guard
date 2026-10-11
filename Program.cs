@@ -135,6 +135,18 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Health check endpoint
+app.MapGet("/health", () =>
+{
+    var uptime = (DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess().StartTime.ToUniversalTime()).TotalSeconds;
+    return Results.Ok(new
+    {
+        status = "ok",
+        timestamp = DateTime.UtcNow.ToString("o"),
+        uptime = uptime
+    });
+}).AllowAnonymous();
+
 // Default route
 app.MapControllerRoute(
     name: "default",
