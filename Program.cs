@@ -8,9 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using QuestPDF.Infrastructure;
 
-// ============================================================================
-// Load .env File if present (Local Development & Docker support)
-// ============================================================================
+// Load .env file
 LoadDotEnv();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -154,10 +152,7 @@ app.MapControllerRoute(
 
 app.Run();
 
-// ============================================================================
-// Helper Methods: .env Loader & Connection String Parser
-// ============================================================================
-
+// Helper methods
 static void LoadDotEnv()
 {
     var searchPaths = new[]

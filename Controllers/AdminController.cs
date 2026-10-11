@@ -158,9 +158,7 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-    // =========================================================================
-    // USERS MANAGEMENT SECTION
-    // =========================================================================
+    // Users management
 
     [HttpGet]
     public async Task<IActionResult> Users()
@@ -285,9 +283,7 @@ public class AdminController : Controller
         return RedirectToAction(nameof(Users));
     }
 
-    // =========================================================================
-    // REPORT SECTION & LIVE ANALYTICS
-    // =========================================================================
+    // Report & analytics
 
     [HttpGet]
     public async Task<IActionResult> Report()
