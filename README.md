@@ -57,24 +57,83 @@
 
 ## 🏗️ System Architecture
 
+<div align="center">
+  <img src="wwwroot/images/architecture-diagram.png" alt="DeployGuard Architecture Diagram" width="100%" />
+</div>
+
+<br/>
+
 ```mermaid
 flowchart TD
-    subgraph UI ["User Interface Layer"]
-        A[Client Browser] --> B[Guest Landing / Auth / User & Admin Dashboards]
+    user(("User"))
+    admin(("Administrator"))
+
+    subgraph WebExp ["Web experience"]
+        razor["Razor interface"]
+        sso["Account and SSO"]
+        mvc["MVC controllers"]
+        razor -->|submits requests| mvc
+        sso --> mvc
     end
 
-    subgraph Core ["ASP.NET Core Application Layer"]
-        B --> C[Controllers & Routing]
-        C --> D[RepositoryCloneService - Shallow Git Ingestion]
-        C --> E[SecretScannerService - Regex Heuristics Engine]
-        C --> F[PipelineParserService - YamlDotNet AST Engine]
-        C --> G[QuestPDF Engine - Vector Document Builder]
+    user -->|uses| razor
+    user -->|authenticates| sso
+    admin -->|governs platform| adminGov
+
+    subgraph RepoIntake ["Repository intake"]
+        repoMgmt["Repository management"]
+        shallowGit["Shallow Git ingestion"]
+        urlParsing["URL provider parsing"]
+        gitAdapters["Git provider adapters"]
+
+        repoMgmt -->|parses URL| urlParsing
+        repoMgmt -->|loads metadata| gitAdapters
     end
 
-    subgraph Data ["Data & Persistence Layer"]
-        C --> H[(PostgreSQL / SQLite via EF Core 10)]
-        H --> I[AppUsers / Repositories / SecretScans / SecretFindings / PipelineStages]
+    gitProviders["Git hosting providers"]
+    gitAdapters -.->|queries metadata| gitProviders
+
+    subgraph SecPipe ["Security and pipelines"]
+        secOrch["Secret scan orchestration"]
+        secEngine["Secret pattern engine"]
+        secRules["Secret rule definitions"]
+        pipeDisc["Pipeline discovery"]
+        wfParsing["Workflow parsing"]
+        pipeFiles["Pipeline files and stages<br/>[PipelineFile.cs]"]
+
+        secOrch -.->|scans content| secEngine
+        secEngine -->|matches patterns| secRules
+        pipeDisc -->|parses definitions| wfParsing
+        pipeDisc -->|creates records| pipeFiles
     end
+
+    mvc -->|manages repositories| repoMgmt
+    mvc -->|triggers scans| secOrch
+    mvc -->|requests pipeline view| pipeDisc
+    secOrch -.->|ingests repository| shallowGit
+
+    subgraph RepGov ["Reporting and governance"]
+        repAssembly["Report data assembly<br/>[ReportService.cs]"]
+        userPdf["User PDF reports"]
+        adminGov["Admin governance<br/>[AdminController.cs]"]
+        adminPdf["Admin PDF reports"]
+
+        repAssembly -->|provides report model| userPdf
+        adminGov -->|exports admin report| adminPdf
+    end
+
+    mvc -->|requests report data| repAssembly
+    mvc -->|generates PDF| userPdf
+
+    subgraph AppData ["Application data"]
+        db[("Relational database")]
+        domainRec["Domain records<br/>[Repository.cs]"]
+        db -->|persists domain records| domainRec
+    end
+
+    pipeFiles -->|stores stages| db
+    db -->|reads scan and pipeline data| mvc
+    db -->|queries platform data| adminGov
 ```
 
 ---
@@ -134,7 +193,9 @@ Deployguard/
 │   ├── Scan/ (History, Details)
 │   └── Shared/ (_Layout, _GuestNavbar, _UserNavbar, _AdminNavbar)
 ├── wwwroot/                       # Static assets (CSS, JS, Logo images, Bootstrap)
-│   ├── images/logo.png            # Official DeployGuard Logo
+│   ├── images/
+│   │   ├── logo.png               # Official DeployGuard Logo
+│   │   └── architecture-diagram.png # System architecture diagram
 │   ├── css/site.css               # Global design tokens and theme engine
 │   └── js/site.js                 # Theme switcher, UTC time formatters, global loader
 ├── appsettings.json               # App configuration & connection strings
