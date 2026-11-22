@@ -1,7 +1,8 @@
+using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 using Deployguard.Data;
 using Deployguard.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace Deployguard.Services.Security;
 
@@ -9,25 +10,69 @@ public class SecretScannerService
 {
     private readonly ApplicationDbContext _context;
 
-    public SecretScannerService(
-        ApplicationDbContext context)
+    private static readonly HashSet<string> IgnoredDirectories = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".git",
+        "node_modules",
+        "bin",
+        "obj",
+        "vendor",
+        "dist",
+        "build",
+        "out",
+        "target",
+        ".vs",
+        ".idea",
+        ".vscode",
+        "packages",
+        ".gradle",
+        ".next",
+        ".nuxt",
+        ".cache",
+        "coverage",
+        ".terraform",
+        "__pycache__",
+        ".pytest_cache"
+    };
+
+    private static readonly HashSet<string> IgnoredFileNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "package-lock.json",
+        "yarn.lock",
+        "pnpm-lock.yaml",
+        "composer.lock",
+        "cargo.lock",
+        "gemfile.lock",
+        "poetry.lock",
+        "go.sum",
+        "packages.lock.json"
+    };
+
+    private static readonly HashSet<string> BinaryExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".png", ".jpg", ".jpeg", ".gif", ".bmp", ".ico", ".webp",
+        ".pdf", ".zip", ".rar", ".7z", ".gz", ".tar",
+        ".exe", ".dll", ".so", ".bin", ".dylib",
+        ".woff", ".woff2", ".ttf", ".otf", ".eot",
+        ".mp3", ".mp4", ".avi", ".mov", ".wav",
+        ".svg", ".min.js", ".min.css", ".map"
+    };
+
+    public SecretScannerService(ApplicationDbContext context)
     {
         _context = context;
     }
 
-    public async Task<SecretScanResult> ScanAsync(
-        string repositoryPath)
+    public async Task<SecretScanResult> ScanAsync(string repositoryPath)
     {
         if (string.IsNullOrWhiteSpace(repositoryPath))
         {
-            throw new ArgumentException(
-                "Repository path is required.");
+            throw new ArgumentException("Repository path is required.");
         }
 
         if (!Directory.Exists(repositoryPath))
         {
-            throw new DirectoryNotFoundException(
-                "Repository directory was not found.");
+            throw new DirectoryNotFoundException("Repository directory was not found.");
         }
 
         var rules = await _context.SecretRules
@@ -36,91 +81,169 @@ public class SecretScannerService
             .OrderBy(r => r.Id)
             .ToListAsync();
 
-        var result = new SecretScanResult();
-
-        var files = Directory.EnumerateFiles(
-            repositoryPath,
-            "*",
-            SearchOption.AllDirectories)
-            .OrderBy(f => f, StringComparer.OrdinalIgnoreCase)
+        // Precompile regex rules once with safe timeouts
+        var compiledRules = rules
+            .Where(r => !string.IsNullOrWhiteSpace(r.Pattern))
+            .Select(r =>
+            {
+                try
+                {
+                    var regex = new Regex(
+                        r.Pattern,
+                        RegexOptions.Compiled |
+                        RegexOptions.IgnoreCase |
+                        RegexOptions.CultureInvariant,
+                        TimeSpan.FromMilliseconds(200));
+                    return (Rule: r, Regex: (Regex?)regex);
+                }
+                catch
+                {
+                    return (Rule: r, Regex: (Regex?)null);
+                }
+            })
+            .Where(x => x.Regex != null)
+            .Select(x => (x.Rule, Regex: x.Regex!))
             .ToList();
 
-        foreach (var filePath in files)
+        var candidateFiles = CollectCandidateFiles(repositoryPath);
+        var findings = new ConcurrentBag<SecretFindingResult>();
+        int filesScanned = 0;
+
+        // Fast parallel file scanning across CPU cores
+        await Parallel.ForEachAsync(candidateFiles, new ParallelOptions
         {
-            if (ShouldIgnoreFile(filePath))
-            {
-                continue;
-            }
+            MaxDegreeOfParallelism = Math.Max(2, Environment.ProcessorCount)
+        }, async (filePath, ct) =>
+        {
+            Interlocked.Increment(ref filesScanned);
+            await ScanSingleFileAsync(repositoryPath, filePath, compiledRules, findings);
+        });
 
-            result.FilesScanned++;
+        var result = new SecretScanResult
+        {
+            FilesScanned = filesScanned,
+            Findings = findings
+                .OrderBy(f => f.FilePath)
+                .ThenBy(f => f.LineNumber)
+                .ToList()
+        };
 
-            await ScanFileAsync(
-                repositoryPath,
-                filePath,
-                rules,
-                result);
-        }
-
-        result.SecretsFound =
-            result.Findings.Count;
+        result.SecretsFound = result.Findings.Count;
 
         return result;
     }
 
-    private async Task ScanFileAsync(
-        string repositoryPath,
-        string filePath,
-        IReadOnlyList<SecretRule> rules,
-        SecretScanResult result)
+    private static List<string> CollectCandidateFiles(string rootDirectory)
     {
-        if (IsBinaryFile(filePath))
+        var filesToScan = new List<string>();
+        var directoriesToVisit = new Stack<string>();
+        directoriesToVisit.Push(rootDirectory);
+
+        while (directoriesToVisit.Count > 0)
         {
-            return;
+            var currentDir = directoriesToVisit.Pop();
+
+            try
+            {
+                foreach (var subDir in Directory.EnumerateDirectories(currentDir))
+                {
+                    var dirName = Path.GetFileName(subDir);
+                    if (!IgnoredDirectories.Contains(dirName))
+                    {
+                        directoriesToVisit.Push(subDir);
+                    }
+                }
+            }
+            catch
+            {
+                // Ignore inaccessible directories
+            }
+
+            try
+            {
+                foreach (var file in Directory.EnumerateFiles(currentDir))
+                {
+                    var fileName = Path.GetFileName(file);
+                    if (IgnoredFileNames.Contains(fileName))
+                    {
+                        continue;
+                    }
+
+                    if (fileName.EndsWith(".min.js", StringComparison.OrdinalIgnoreCase) ||
+                        fileName.EndsWith(".min.css", StringComparison.OrdinalIgnoreCase) ||
+                        fileName.EndsWith(".map", StringComparison.OrdinalIgnoreCase))
+                    {
+                        continue;
+                    }
+
+                    var ext = Path.GetExtension(file);
+                    if (BinaryExtensions.Contains(ext))
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        var info = new FileInfo(file);
+                        // Skip files larger than 1 MB (e.g. data dumps, bundled assets)
+                        if (info.Length > 1024 * 1024)
+                        {
+                            continue;
+                        }
+                    }
+                    catch
+                    {
+                        continue;
+                    }
+
+                    filesToScan.Add(file);
+                }
+            }
+            catch
+            {
+                // Ignore inaccessible files
+            }
         }
 
+        return filesToScan;
+    }
+
+    private static async Task ScanSingleFileAsync(
+        string repositoryPath,
+        string filePath,
+        IReadOnlyList<(SecretRule Rule, Regex Regex)> compiledRules,
+        ConcurrentBag<SecretFindingResult> findings)
+    {
         string[] lines;
 
         try
         {
-            lines = await File.ReadAllLinesAsync(
-                filePath);
+            lines = await File.ReadAllLinesAsync(filePath);
         }
         catch
         {
             return;
         }
 
-        for (var lineIndex = 0;
-             lineIndex < lines.Length;
-             lineIndex++)
+        var relativePath = Path.GetRelativePath(repositoryPath, filePath).Replace('\\', '/');
+
+        for (var lineIndex = 0; lineIndex < lines.Length; lineIndex++)
         {
             var line = lines[lineIndex];
 
-            if (string.IsNullOrWhiteSpace(line))
+            if (string.IsNullOrWhiteSpace(line) || line.Length > 1000)
             {
+                // Skip empty or excessively long lines (e.g. minified single-line code)
                 continue;
             }
 
-            foreach (var rule in rules)
+            foreach (var (rule, regex) in compiledRules)
             {
-                if (string.IsNullOrWhiteSpace(
-                        rule.Pattern))
-                {
-                    continue;
-                }
-
                 IEnumerable<Match> matches;
 
                 try
                 {
-                    matches = Regex
-                        .Matches(
-                            line,
-                            rule.Pattern,
-                            RegexOptions.IgnoreCase |
-                            RegexOptions.CultureInvariant,
-                            TimeSpan.FromSeconds(1))
-                        .Cast<Match>();
+                    matches = regex.Matches(line).Cast<Match>();
                 }
                 catch
                 {
@@ -129,96 +252,27 @@ public class SecretScannerService
 
                 foreach (var match in matches)
                 {
-                    if (!match.Success ||
-                        string.IsNullOrWhiteSpace(
-                            match.Value))
+                    if (!match.Success || string.IsNullOrWhiteSpace(match.Value))
                     {
                         continue;
                     }
 
-                    var relativePath =
-                        Path.GetRelativePath(
-                            repositoryPath,
-                            filePath);
-
                     var masked = MaskSecret(match.Value);
 
-                    var alreadyExists = result.Findings.Any(f =>
-                        f.SecretRuleId == rule.Id &&
-                        f.FilePath == relativePath &&
-                        f.LineNumber == lineIndex + 1 &&
-                        f.MaskedValue == masked);
-
-                    if (!alreadyExists)
+                    findings.Add(new SecretFindingResult
                     {
-                        result.Findings.Add(
-                            new SecretFindingResult
-                            {
-                                SecretRuleId = rule.Id,
-                                FilePath = relativePath,
-                                LineNumber = lineIndex + 1,
-                                MaskedValue = masked,
-                                Severity = rule.Severity
-                            });
-                    }
+                        SecretRuleId = rule.Id,
+                        FilePath = relativePath,
+                        LineNumber = lineIndex + 1,
+                        MaskedValue = masked,
+                        Severity = rule.Severity
+                    });
                 }
             }
         }
     }
 
-    private static bool ShouldIgnoreFile(
-        string filePath)
-    {
-        var normalizedPath =
-            filePath.Replace('\\', '/');
-
-        return normalizedPath.Contains(
-            "/.git/",
-            StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static bool IsBinaryFile(
-        string filePath)
-    {
-        var extension =
-            Path.GetExtension(filePath)
-                .ToLowerInvariant();
-
-        var binaryExtensions = new HashSet<string>(
-            StringComparer.OrdinalIgnoreCase)
-        {
-            ".png",
-            ".jpg",
-            ".jpeg",
-            ".gif",
-            ".bmp",
-            ".ico",
-            ".webp",
-            ".pdf",
-            ".zip",
-            ".rar",
-            ".7z",
-            ".gz",
-            ".tar",
-            ".exe",
-            ".dll",
-            ".so",
-            ".bin",
-            ".woff",
-            ".woff2",
-            ".ttf",
-            ".otf",
-            ".mp3",
-            ".mp4",
-            ".avi",
-            ".mov"
-        };
-
-        return binaryExtensions.Contains(extension);
-    }
-
-    private static string MaskSecret(
-        string secret)
+    private static string MaskSecret(string secret)
     {
         if (secret.Length <= 6)
         {
@@ -244,22 +298,18 @@ public class SecretScanResult
 
     public int SecretsFound { get; set; }
 
-    public List<SecretFindingResult> Findings { get; set; } =
-        new();
+    public List<SecretFindingResult> Findings { get; set; } = new();
 }
 
 public class SecretFindingResult
 {
     public int SecretRuleId { get; set; }
 
-    public string FilePath { get; set; } =
-        string.Empty;
+    public string FilePath { get; set; } = string.Empty;
 
     public int LineNumber { get; set; }
 
-    public string MaskedValue { get; set; } =
-        string.Empty;
+    public string MaskedValue { get; set; } = string.Empty;
 
-    public string Severity { get; set; } =
-        string.Empty;
+    public string Severity { get; set; } = string.Empty;
 }

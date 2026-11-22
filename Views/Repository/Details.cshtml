@@ -220,12 +220,13 @@
                     <form asp-controller="Scan"
                           asp-action="Start"
                           method="post"
-                          class="d-inline">
+                          class="d-inline"
+                          id="scanRepoForm">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="repositoryId" value="@Model.Id" />
-                        <button type="submit" class="btn btn-success fw-semibold px-4 py-2 shadow-sm d-flex align-items-center gap-2">
+                        <button type="submit" id="scanRepoBtn" class="btn btn-success fw-semibold px-4 py-2 shadow-sm d-flex align-items-center gap-2">
                             <i class="bi bi-shield-check fs-5"></i>
-                            <span>Scan Repository</span>
+                            <span id="scanRepoBtnText">Scan Repository</span>
                         </button>
                     </form>
 
@@ -345,3 +346,115 @@
         </div>
     </div>
 </div>
+
+<!-- Private Repository Detected Modal -->
+<div class="modal fade"
+     id="privateRepoModal"
+     tabindex="-1"
+     aria-labelledby="privateRepoModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-bottom bg-light">
+                <h5 class="modal-title fw-bold text-dark d-flex align-items-center gap-2" id="privateRepoModalLabel">
+                    <i class="bi bi-lock-fill text-warning fs-5"></i>
+                    Private Repository Detected
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-4">
+                <div class="mx-auto mb-3 d-inline-flex align-items-center justify-content-center rounded-circle bg-warning-subtle text-warning" style="width: 70px; height: 70px;">
+                    <i class="bi bi-shield-lock" style="font-size: 2.2rem;"></i>
+                </div>
+                <h5 class="fw-bold mb-2 text-dark">This is a Private Repository</h5>
+                <p class="text-muted mb-0" id="privateRepoModalMessage">
+                    This repository is private or requires authentication credentials. DeployGuard currently supports scanning public repositories only.
+                </p>
+            </div>
+            <div class="modal-footer border-top bg-light justify-content-center">
+                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                    Understood
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var scanForm = document.getElementById("scanRepoForm");
+        var scanBtn = document.getElementById("scanRepoBtn");
+        var scanBtnText = document.getElementById("scanRepoBtnText");
+        var modalEl = document.getElementById("privateRepoModal");
+        var modalMessageEl = document.getElementById("privateRepoModalMessage");
+
+        @if (TempData["PrivateRepoError"] != null)
+        {
+            <text>
+            if (modalEl) {
+                var message = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["PrivateRepoError"]?.ToString() ?? ""));
+                if (message && modalMessageEl) {
+                    modalMessageEl.innerText = message;
+                }
+                var bsModal = new bootstrap.Modal(modalEl);
+                bsModal.show();
+            }
+            </text>
+        }
+
+        if (scanForm && scanBtn) {
+            scanForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                var originalHtml = scanBtn.innerHTML;
+                scanBtn.disabled = true;
+                scanBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span><span>Scanning Repository...</span>';
+
+                var formData = new FormData(scanForm);
+
+                fetch(scanForm.action, {
+                    method: "POST",
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "application/json"
+                    },
+                    body: formData
+                })
+                .then(function (res) {
+                    return res.json().catch(function () {
+                        // Fallback reload if non-json response
+                        window.location.reload();
+                    });
+                })
+                .then(function (data) {
+                    if (!data) return;
+
+                    if (data.success && data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    } else if (data.isPrivate) {
+                        scanBtn.disabled = false;
+                        scanBtn.innerHTML = originalHtml;
+                        if (data.message && modalMessageEl) {
+                            modalMessageEl.innerText = data.message;
+                        }
+                        if (modalEl) {
+                            var bsModal = new bootstrap.Modal(modalEl);
+                            bsModal.show();
+                        }
+                    } else {
+                        scanBtn.disabled = false;
+                        scanBtn.innerHTML = originalHtml;
+                        alert(data.message || "An error occurred while scanning the repository.");
+                    }
+                })
+                .catch(function () {
+                    scanBtn.disabled = false;
+                    scanBtn.innerHTML = originalHtml;
+                    scanForm.submit();
+                });
+            });
+        }
+    });
+</script>
+}
