@@ -90,6 +90,46 @@ body {
   background-color: var(--body-bg) !important;
   color: var(--text-main);
   transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  cursor: default;
+}
+
+/* Prevent blue selection highlight on double click across the application */
+::selection {
+  background: transparent;
+  color: inherit;
+}
+
+::-moz-selection {
+  background: transparent;
+  color: inherit;
+}
+
+/* Allow text selection and I-beam cursor on inputs, textareas, and code snippets */
+input,
+textarea,
+pre,
+code,
+[contenteditable="true"] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  cursor: text;
+}
+
+/* Pointer cursor for interactive elements */
+a,
+button,
+.btn,
+[role="button"],
+.nav-link,
+.dropdown-item,
+.theme-toggle-btn {
+  cursor: pointer;
 }
 
 body, button, input, select, textarea, .btn, .navbar, .nav-link, .card, .dropdown-item, .table, h1, h2, h3, h4, h5, h6, .badge, p, span, a, label {
