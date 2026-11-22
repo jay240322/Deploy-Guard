@@ -103,6 +103,20 @@ public class SecretScanService
 
             return scan;
         }
+        catch (PrivateRepositoryException)
+        {
+            try
+            {
+                _context.SecretScans.Remove(scan);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                // Ignore cleanup error
+            }
+
+            throw;
+        }
         catch
         {
             // Mark scan as failed

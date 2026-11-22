@@ -39,7 +39,7 @@ public class RepositoryCloneService
         }
 
         var arguments =
-            $"clone --depth 1 \"{repoUrl}\" \"{repositoryPath}\"";
+            $"clone --depth 1 --single-branch --no-tags \"{repoUrl}\" \"{repositoryPath}\"";
 
         var startInfo = new ProcessStartInfo
         {
@@ -51,6 +51,10 @@ public class RepositoryCloneService
             UseShellExecute = false,
             CreateNoWindow = true
         };
+
+        // Prevent git from prompting for credentials on terminal and hanging
+        startInfo.Environment["GIT_TERMINAL_PROMPT"] = "0";
+        startInfo.Environment["GIT_ASKPASS"] = "echo";
 
         using var process =
             new Process
@@ -66,13 +70,32 @@ public class RepositoryCloneService
         var errorTask =
             process.StandardError.ReadToEndAsync();
 
-        await process.WaitForExitAsync();
+        // 35-second timeout to prevent indefinite blocking
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(35));
+
+        try
+        {
+            await process.WaitForExitAsync(cts.Token);
+        }
+        catch (OperationCanceledException)
+        {
+            try { process.Kill(true); } catch { }
+            throw new InvalidOperationException("Repository cloning timed out. The repository may be unreachable or too large.");
+        }
 
         var output = await outputTask;
         var error = await errorTask;
 
         if (process.ExitCode != 0)
         {
+            var combinedError = $"{error} {output}".Trim();
+
+            if (IsPrivateRepositoryError(combinedError))
+            {
+                throw new PrivateRepositoryException(
+                    "This repository is private or requires authentication credentials. DeployGuard can only scan publicly accessible repositories.");
+            }
+
             throw new InvalidOperationException(
                 $"Repository clone failed: {error}");
         }
@@ -84,6 +107,24 @@ public class RepositoryCloneService
         }
 
         return repositoryPath;
+    }
+
+    public static bool IsPrivateRepositoryError(string? error)
+    {
+        if (string.IsNullOrWhiteSpace(error))
+        {
+            return false;
+        }
+
+        return error.Contains("could not read Username", StringComparison.OrdinalIgnoreCase) ||
+               error.Contains("terminal prompts disabled", StringComparison.OrdinalIgnoreCase) ||
+               error.Contains("Authentication failed", StringComparison.OrdinalIgnoreCase) ||
+               error.Contains("Repository not found", StringComparison.OrdinalIgnoreCase) ||
+               error.Contains("Invalid username or password", StringComparison.OrdinalIgnoreCase) ||
+               error.Contains("Access denied", StringComparison.OrdinalIgnoreCase) ||
+               error.Contains("Permission denied", StringComparison.OrdinalIgnoreCase) ||
+               error.Contains("403", StringComparison.OrdinalIgnoreCase) ||
+               error.Contains("404", StringComparison.OrdinalIgnoreCase);
     }
 
     public void DeleteClone(string repositoryPath)
