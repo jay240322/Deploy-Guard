@@ -1,61 +1,55 @@
 <div align="center">
 
-  <img src="wwwroot/images/logo.png" alt="DeployGuard Logo" width="130" height="130" />
+  <img src="wwwroot/images/logo.png" alt="DeployGuard Logo" width="120" height="120" />
 
   # DeployGuard
-  ### Enterprise DevSecOps Intelligence, Static Secret Detection & CI/CD Pipeline Visualizer
+  ### Automated Source Code Security Scanner, Secret Detection Engine & CI/CD Pipeline Visualizer
 
   [![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
   [![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/apps/aspnet/mvc)
   [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Database-316192?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+  [![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
   [![QuestPDF](https://img.shields.io/badge/QuestPDF-Vector%20Reports-007ACC?style=for-the-badge)](https://www.questpdf.com/)
-  [![Firebase](https://img.shields.io/badge/Firebase-OAuth%202.0-FFA611?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/)
   [![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5.3-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com/)
-  [![License](https://img.shields.io/badge/License-MIT-success.svg?style=for-the-badge)](LICENSE)
+  [![License: MIT](https://img.shields.io/badge/License-MIT-success.svg?style=for-the-badge)](LICENSE)
 
   <p align="center">
-    <strong>DeployGuard</strong> continuously inspects Git repositories for exposed API credentials, database keys, and CI/CD pipeline vulnerabilities in seconds before deployment.
-  </p>
-
-  <p align="center">
-    <a href="#-key-features">Key Features</a> •
-    <a href="#-system-architecture">Architecture</a> •
-    <a href="#-technology-stack">Tech Stack</a> •
-    <a href="#-quick-start">Quick Start</a> •
-    <a href="#-how-it-works">How It Works</a> •
-    <a href="#-database-schema">Database Schema</a>
+    <strong>DeployGuard</strong> is a high-performance web platform that continuously scans Git repositories for exposed API tokens, database credentials, and cloud secrets, while parsing CI/CD workflows into interactive dependency graphs before production deployment.
   </p>
 
 </div>
 
 ---
 
-## 🌟 Overview
+## Overview
 
-**DeployGuard** is an automated DevSecOps platform built with **ASP.NET Core (.NET 10)**. It safeguards software organizations by proactively detecting hardcoded secrets, leaked tokens, and cloud credentials in source repositories while parsing complex CI/CD pipeline workflows into interactive, visual Directed Acyclic Graphs (DAGs).
+**DeployGuard** is an automated code security and workflow analysis platform engineered with **ASP.NET Core (.NET 10)** and **PostgreSQL**. Designed for engineering teams and modern development workflows, DeployGuard proactively intercepts hardcoded credentials, cloud API tokens, and cryptographic keys from source code repositories.
 
-### 🎯 Problems Solved:
-1. **Accidental Credential Leaks**: Detects API keys, database connection strings, and cryptographic private keys before code reaches production.
-2. **CI/CD Pipeline Observability**: Parses `.github/workflows/*.yml` and `Jenkinsfile` into structured execution stages with dependency trees.
-3. **Audit Readiness**: Generates executive vector PDF reports for compliance and security auditing.
-4. **Sandboxed Security**: Zero data retention architecture using isolated shallow Git ingestion.
+In addition to static secret detection, DeployGuard inspects workflow configuration files (GitHub Actions, GitLab CI, Azure Pipelines, and Jenkinsfiles) and parses them into structured execution stages with interactive dependency maps.
 
----
-
-## ✨ Key Features
-
-- 🔍 **Sub-Second Secret Detection**: High-speed line-by-line static code analyzer matching against 16+ enterprise pattern definitions (AWS, GitHub, Stripe, RSA, JWT, DB URIs).
-- 🛡️ **Defense-in-Depth Token Masking**: Raw secrets are masked at the service boundary (e.g. `AKIA****************1234`) to prevent secondary leakage in logs or reports.
-- 🌳 **Interactive CI/CD Graph Visualizer**: AST-based workflow parser mapping jobs, prerequisite dependencies (`needs`), parallel execution flags, and execution conditions (`if`).
-- 📊 **Executive Vector PDF Audits**: Powered by **QuestPDF** to generate crisp, high-resolution audit reports with severity risk radars and line-by-line remediation guides.
-- 🔐 **Hybrid Security & Single Sign-On**: ASP.NET Core Cookie Authentication paired with **Firebase Google OAuth 2.0 Single Sign-On**.
-- 👑 **Admin Governance Portal**: Global platform health dashboard, risky repository ranking, user authorization management, and PDF intelligence export.
-- 🎨 **Modern Design Engine**: Responsive dark/light theme switching, sticky blurred header, custom micro-animations, and unified Google Font typography (**Plus Jakarta Sans**).
-- ⚡ **Global Loading & Processing Engine**: Smooth debounce-driven loading overlays and button-level spinner indicators on long-running tasks.
+### Key Problems Solved
+1. **Accidental Credential Exposure**: Catches leaked credentials (AWS, Stripe, GitHub, database connection strings) before release.
+2. **Zero-Retention Sandboxing**: Employs shallow single-branch cloning and purges ingested code from disk immediately after scanning.
+3. **Pipeline Observability**: Parses complex YAML/Jenkinsfile pipelines into visual stages with dependencies and conditional triggers.
+4. **Audit Readiness**: Generates vector-based PDF audit reports complete with severity metrics and line-by-line remediation coordinates.
+5. **Private Repo Safety**: Automatically guards against unauthorized private repository access with graceful client-side notifications.
 
 ---
 
-## 🏗️ System Architecture
+## Key Features
+
+- **Multi-Threaded Parallel Scanning Engine**: Employs `Parallel.ForEachAsync` with precompiled regular expressions and smart directory exclusion (`.git`, `node_modules`, `bin`, `obj`, lock files, bundles) to scan full repositories in seconds.
+- **Zero Data Retention Sandbox**: Ingests code using single-branch shallow clones (`git clone --depth 1 --single-branch --no-tags`) with strict `GIT_TERMINAL_PROMPT=0` safeguards, automatically wiping files upon scan termination.
+- **Private Repository Detection**: Instantly identifies private or inaccessible repositories without server hangs, presenting an informative modal popup in the browser.
+- **Defense-in-Depth Token Masking**: Raw secrets are masked at the service boundary (e.g., `AKIA****************1234`) to prevent secondary leakage in database records, web logs, or reports.
+- **Interactive CI/CD Workflow Visualizer**: AST-based workflow parser mapping jobs, prerequisite dependencies (`needs`), parallel execution flags, and execution conditions (`if`).
+- **Vector PDF Audit Reports**: Powered by **QuestPDF** to generate crisp, print-ready security audit summaries with severity breakdowns, risk scores, and finding timestamps.
+- **Role-Based Access Control & Auth**: Cookie authentication with PBKDF2 password hashing, user registration, and a dedicated administration dashboard for system analytics.
+- **Minimal UI Design System**: Built on Bootstrap 5 with responsive dark/light mode toggles, interactive status spinners, and clean typography.
+
+---
+
+## System Architecture
 
 <div align="center">
   <img src="wwwroot/images/architecture-diagram.png" alt="DeployGuard Architecture Diagram" width="100%" />
@@ -63,154 +57,83 @@
 
 <br/>
 
+### Scan Execution & Processing Workflow
+
 ```mermaid
 flowchart TD
-    user(("User"))
-    admin(("Administrator"))
-
-    subgraph WebExp ["Web experience"]
-        razor["Razor interface"]
-        sso["Account and SSO"]
-        mvc["MVC controllers"]
-        razor -->|submits requests| mvc
-        sso --> mvc
-    end
-
-    user -->|uses| razor
-    user -->|authenticates| sso
-    admin -->|governs platform| adminGov
-
-    subgraph RepoIntake ["Repository intake"]
-        repoMgmt["Repository management"]
-        shallowGit["Shallow Git ingestion"]
-        urlParsing["URL provider parsing"]
-        gitAdapters["Git provider adapters"]
-
-        repoMgmt -->|parses URL| urlParsing
-        repoMgmt -->|loads metadata| gitAdapters
-    end
-
-    gitProviders["Git hosting providers"]
-    gitAdapters -.->|queries metadata| gitProviders
-
-    subgraph SecPipe ["Security and pipelines"]
-        secOrch["Secret scan orchestration"]
-        secEngine["Secret pattern engine"]
-        secRules["Secret rule definitions"]
-        pipeDisc["Pipeline discovery"]
-        wfParsing["Workflow parsing"]
-        pipeFiles["Pipeline files and stages<br/>[PipelineFile.cs]"]
-
-        secOrch -.->|scans content| secEngine
-        secEngine -->|matches patterns| secRules
-        pipeDisc -->|parses definitions| wfParsing
-        pipeDisc -->|creates records| pipeFiles
-    end
-
-    mvc -->|manages repositories| repoMgmt
-    mvc -->|triggers scans| secOrch
-    mvc -->|requests pipeline view| pipeDisc
-    secOrch -.->|ingests repository| shallowGit
-
-    subgraph RepGov ["Reporting and governance"]
-        repAssembly["Report data assembly<br/>[ReportService.cs]"]
-        userPdf["User PDF reports"]
-        adminGov["Admin governance<br/>[AdminController.cs]"]
-        adminPdf["Admin PDF reports"]
-
-        repAssembly -->|provides report model| userPdf
-        adminGov -->|exports admin report| adminPdf
-    end
-
-    mvc -->|requests report data| repAssembly
-    mvc -->|generates PDF| userPdf
-
-    subgraph AppData ["Application data"]
-        db[("Relational database")]
-        domainRec["Domain records<br/>[Repository.cs]"]
-        db -->|persists domain records| domainRec
-    end
-
-    pipeFiles -->|stores stages| db
-    db -->|reads scan and pipeline data| mvc
-    db -->|queries platform data| adminGov
+    A([User Input: Repo URL]) --> B[RepositoryUrlParser]
+    B --> C{Validate Provider}
+    C -->|Supported| D[IGitProvider API Metadata Fetch]
+    C -->|Unsupported| E[Error Notification]
+    
+    D --> F[Database: Register Repository]
+    F --> G[User clicks Scan Repository]
+    
+    G --> H[RepositoryCloneService]
+    H -->|Shallow clone: depth 1| I{Git Clone Check}
+    I -->|Private / Auth Failed| J[Throw PrivateRepositoryException]
+    J --> K[Client Popup: Private Repo Detected]
+    
+    I -->|Success| L[SecretScannerService]
+    L -->|Filter Directories & Files| M[Parallel.ForEachAsync]
+    M -->|Precompiled Regex Matching| N[Collect Masked Findings]
+    
+    L --> O[PipelineDetectionService]
+    O -->|Parse YAML / AST| P[Extract Stages & Dependencies]
+    
+    N --> Q[Save SecretScan & Findings to PostgreSQL]
+    P --> Q
+    Q --> R[Wipe Sandbox Directory from Disk]
+    R --> S[Redirect to Scan Details & PDF Export]
 ```
 
 ---
 
-## 💻 Technology Stack
+## Technology Stack
 
-| Layer | Technology | Description |
+| Layer | Technology | Purpose |
 |---|---|---|
-| **Framework** | **ASP.NET Core 10 (MVC)** | High-throughput asynchronous web application framework |
-| **Language** | **C# 13 / .NET 10** | Modern, type-safe backend programming language |
-| **ORM & Data** | **Entity Framework Core 10** | Code-First migrations, automated seeding, and relational queries |
-| **Database** | **PostgreSQL / SQLite** | High-performance ACID relational storage |
-| **PDF Generation** | **QuestPDF** | In-memory fluent vector document layout engine |
-| **Workflow Parsing** | **YamlDotNet** | Abstract Syntax Tree (AST) parser for GitHub Actions & Jenkinsfiles |
-| **Authentication** | **Cookie Auth + Firebase SDK** | Secure PBKDF2 password hashing & Google OAuth 2.0 Single Sign-On |
-| **Styling & UI** | **Bootstrap 5.3 + Vanilla CSS** | Custom design system with dark/light themes and Google Fonts |
+| **Framework** | **ASP.NET Core 10 (MVC)** | High-throughput asynchronous backend web application |
+| **Language** | **C# 13 / .NET 10** | Type-safe, high-performance object-oriented programming |
+| **ORM & Data** | **Entity Framework Core 10** | Code-First migrations, automated seeding, relational queries |
+| **Database** | **PostgreSQL (Npgsql)** | ACID-compliant relational storage (supports Neon, Supabase, Railway) |
+| **PDF Generation** | **QuestPDF (Community)** | Fluent, in-memory vector PDF document generation |
+| **Workflow Parsing** | **YamlDotNet** | Abstract Syntax Tree (AST) parser for CI/CD workflow files |
+| **Authentication** | **Cookie Auth + ASP.NET Identity** | PBKDF2 password hashing and secure HTTP-only cookies |
+| **Frontend & UI** | **Bootstrap 5.3 + Bootstrap Icons** | Responsive UI with custom theme engine (Dark / Light mode) |
+| **Containerization** | **Docker** | Multi-stage production container with Git CLI preinstalled |
 
 ---
 
-## 📁 Directory Structure
+## Supported Secret Rules
 
-```
-Deployguard/
-├── Controllers/
-│   ├── AccountController.cs       # Authentication, Login, Register, Google SSO, Logout
-│   ├── AdminController.cs         # Admin Dashboard, User Management, Scan Reports
-│   ├── HomeController.cs          # Landing page and user overview dashboard
-│   ├── PipelineController.cs      # CI/CD pipeline stage visualization
-│   ├── ReportController.cs        # User PDF audit report downloads
-│   ├── RepositoryController.cs    # Git repository management and scan triggers
-│   └── ScanController.cs          # Scan history, detail findings & remediation
-├── Data/
-│   └── ApplicationDbContext.cs    # EF Core context, entity models & relationships
-├── Models/                        # Domain entities and ViewModels
-│   ├── AdminReportViewModel.cs
-│   ├── AdminUsersViewModel.cs
-│   ├── AppUser.cs
-│   ├── PipelineFile.cs
-│   ├── PipelineStage.cs
-│   ├── Repository.cs
-│   ├── SecretFinding.cs
-│   ├── SecretRule.cs
-│   └── SecretScan.cs
-├── Services/
-│   ├── Pipeline/                  # Workflow discovery & AST YAML parsers
-│   ├── Providers/                 # Git provider detection (GitHub, GitLab, Bitbucket, Azure DevOps)
-│   ├── Reports/                   # QuestPDF builders for User and Admin PDF reports
-│   ├── Security/                  # Sandbox shallow clone and static regex pattern scanner
-│   ├── RepositoryService.cs
-│   └── RepositoryUrlParser.cs
-├── Views/                         # Razor Views & Layouts
-│   ├── Account/ (Login, Register)
-│   ├── Admin/ (Dashboard, Users, Report, Login)
-│   ├── Home/ (Landing, Dashboard, Privacy)
-│   ├── Pipeline/ (Details graph)
-│   ├── Repository/ (Index, Details, Create, Edit)
-│   ├── Scan/ (History, Details)
-│   └── Shared/ (_Layout, _GuestNavbar, _UserNavbar, _AdminNavbar)
-├── wwwroot/                       # Static assets (CSS, JS, Logo images, Bootstrap)
-│   ├── images/
-│   │   ├── logo.png               # Official DeployGuard Logo
-│   │   └── architecture-diagram.png # System architecture diagram
-│   ├── css/site.css               # Global design tokens and theme engine
-│   └── js/site.js                 # Theme switcher, UTC time formatters, global loader
-├── appsettings.json               # App configuration & connection strings
-├── Program.cs                     # DI service registrations, EF migrations & middleware
-└── Dockerfile                     # Production container deployment definition
-```
+DeployGuard ships with a comprehensive set of pre-seeded regex detection rules:
+
+| Category | Secret Type | Default Severity | Description |
+|---|---|:---:|---|
+| **Cloud** | AWS Access Key | `Critical` | AWS access key identifiers (`AKIA...`) |
+| **Cloud** | AWS Secret Key | `Critical` | AWS secret access credentials |
+| **Cloud** | Google API Key | `High` | Public/Private Google Cloud API keys |
+| **Source Control** | GitHub Personal Token | `Critical` | Classic and fine-grained GitHub PATs |
+| **Source Control** | GitLab Personal Token | `Critical` | GitLab personal and deploy tokens |
+| **Payments** | Stripe Live Secret Key | `Critical` | Production Stripe secret keys (`sk_live_...`) |
+| **Payments** | Stripe Test Secret Key | `High` | Test Stripe API keys (`sk_test_...`) |
+| **Database** | Database Connection URI | `Critical` | Hardcoded MySQL, PostgreSQL, and SQL passwords |
+| **Cryptography** | Private Cryptographic Key | `Critical` | RSA, EC, DSA, and OpenSSH private keys |
+| **Auth** | JWT Secret Key | `High` | Hardcoded JWT HMAC signing secrets |
+| **Messaging** | Slack API / Bot Token | `High` | Slack bot and workspace user tokens |
+| **Messaging** | Twilio API Secret | `High` | Twilio communication service keys |
+| **Email** | SendGrid API Key | `High` | SendGrid mail delivery service keys |
+| **AI / ML** | OpenAI API Key | `Critical` | OpenAI developer platform keys |
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
-- [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Git CLI](https://git-scm.com/) installed and on system `PATH`
-- [PostgreSQL](https://www.postgresql.org/) (or SQLite)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
+- [Git CLI](https://git-scm.com/) installed and available on system `PATH`
+- [PostgreSQL](https://www.postgresql.org/) (Local instance or cloud provider like Neon / Supabase)
 
 ### 1. Clone the Repository
 ```bash
@@ -218,56 +141,91 @@ git clone https://github.com/jay240322/Deploy-Guard.git
 cd Deployguard
 ```
 
-### 2. Configure Connection String
-Update `appsettings.json` with your database credentials:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Database=deployguard;Username=postgres;Password=your_password"
-  }
-}
+### 2. Configure Environment Variables
+Copy the template `.env.example` file to `.env`:
+```bash
+cp .env.example .env
 ```
 
-### 3. Build & Run
-```powershell
-# Restore dependencies and build
+Edit `.env` with your PostgreSQL database connection string and administrator credentials:
+```env
+ASPNETCORE_ENVIRONMENT=Development
+DATABASE_URL=postgresql://postgres:password@localhost:5432/deployguard?sslmode=prefer
+ADMIN_PASSWORD=YourSecureAdminPassword123!
+```
+
+### 3. Run Database Migrations & Seed
+EF Core will automatically apply schema migrations and seed the default rules on application launch. To manually run migrations via CLI:
+```bash
+dotnet ef database update
+```
+
+### 4. Build & Run
+```bash
+# Build the project
 dotnet build
 
-# Launch application on HTTPS
-dotnet run --launch-profile "https"
+# Launch the application
+dotnet run
 ```
 
-Access the application in your browser:
-- **HTTPS**: `https://localhost:7270`
+Open your browser at:
 - **HTTP**: `http://localhost:5044`
+- **HTTPS**: `https://localhost:7270`
 
 ---
 
-## ⚙️ How It Works
+## Docker & Deployment
 
-### 1. Sandboxed Shallow Ingestion
-When a scan is triggered, DeployGuard clones only the tip commit snapshot without past commit histories:
+DeployGuard includes a production-ready, multi-stage Dockerfile with Git CLI preinstalled in the runtime container.
+
+### Running with Docker
+
 ```bash
-git clone --depth 1 "<repository-url>" "<sandbox-temp-directory>"
+# Build the Docker image
+docker build -t deployguard:latest .
+
+# Run the container
+docker run -d -p 8080:8080 \
+  -e ASPNETCORE_ENVIRONMENT=Production \
+  -e PORT=8080 \
+  -e DATABASE_URL="postgresql://username:password@hostname:5432/dbname?sslmode=require" \
+  -e ADMIN_PASSWORD="YourStrongPassword" \
+  --name deployguard-app deployguard:latest
 ```
-This enables repository ingestion in **under 1 second** while keeping server memory footprints minimal.
 
-### 2. Static Secret Scanning Engine
-The scanner traverses text files while ignoring binary formats (`.png`, `.exe`, `.zip`, `.pdf`, `.dll`) and internal `.git` directories, checking against regex definitions:
-- **AWS Access Keys**: `\bAKIA[0-9A-Z]{16}\b`
-- **GitHub Personal Access Tokens**: `\bgh[pousr]_[A-Za-z0-9_]{36,}\b`
-- **Stripe Secret Keys**: `\bsk_live_[A-Za-z0-9]{20,}\b`
-- **Database Connection URIs**: `(?i)(db|mysql|postgres)[_-]?(password|pwd)[\s:=]+['"][^'"]{6,}['"]`
-- **Private Cryptographic Keys**: `-----BEGIN (RSA|EC|DSA|OPENSSH)? PRIVATE KEY-----`
+### Deploying to Railway / Render
 
-### 3. CI/CD AST Parsing & Dependency Mapping
-1. `PipelineDetectionService` discovers workflow files (`.github/workflows/*.yml`, `Jenkinsfile`).
-2. `PipelineParserService` utilizes **YamlDotNet** to construct an AST, extracting jobs, dependencies (`needs`), parallel flags, and conditional clauses (`if`).
-3. The UI renders an interactive Directed Acyclic Graph (DAG) with visual status indicators.
+1. Create a new service from your GitHub repository.
+2. Railway/Render will automatically detect the **Dockerfile**.
+3. In the **Variables** tab, supply the following:
+   ```env
+   ASPNETCORE_ENVIRONMENT=Production
+   PORT=8080
+   DATABASE_URL=postgresql://username:password@hostname:5432/dbname?sslmode=require
+   ADMIN_PASSWORD=YourAdminPasswordHere
+   ```
+4. Deploy the service. The database schema will automatically migrate and seed on startup.
 
 ---
 
-## 📊 Database Schema
+## Health Check Endpoint
+
+DeployGuard provides an unauthenticated health probe endpoint for container orchestrators and uptime monitors:
+
+- **Endpoint**: `GET /health`
+- **Response**:
+  ```json
+  {
+    "status": "ok",
+    "timestamp": "2026-11-24T08:30:00.0000000Z",
+    "uptime": 1420.5
+  }
+  ```
+
+---
+
+## Database Schema
 
 ```mermaid
 erDiagram
@@ -293,16 +251,24 @@ erDiagram
         int Id PK
         string Name
         string Owner
+        string RepoName
         string RepoUrl
         string Provider
+        string DefaultBranch
+        string Language
+        int SizeKb
         int CreatedByUserId FK
+        DateTime CreatedAt
+        DateTime LastScannedAt
     }
 
     SecretScan {
         int Id PK
         int RepositoryId FK
+        int TriggeredByUserId FK
         int FilesScanned
         int SecretsFound
+        string Status
         DateTime StartedAt
         DateTime CompletedAt
     }
@@ -315,6 +281,16 @@ erDiagram
         int LineNumber
         string MaskedValue
         string Severity
+        bool IsFalsePositive
+    }
+
+    SecretRule {
+        int Id PK
+        string Name
+        string Pattern
+        string Severity
+        string Category
+        bool IsActive
     }
 
     PipelineFile {
@@ -335,3 +311,41 @@ erDiagram
         string Condition
     }
 ```
+
+---
+
+## Contributing
+
+Contributions, bug reports, and feature proposals are welcome!
+
+1. **Fork** the repository.
+2. **Create** a feature branch:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **Commit** your changes following standard conventional commits:
+   ```bash
+   git commit -m "feat: add support for Bitbucket Pipelines detection"
+   ```
+4. **Push** to your branch:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+5. **Open** a Pull Request against `main`.
+
+---
+
+## Author & Contact
+
+**Jay Patel**
+- **Portfolio**: [jaypatel.online](https://www.jaypatel.online)
+- **GitHub**: [@jay240322](https://github.com/jay240322)
+- **LinkedIn**: [Jay Patel](https://linkedin.com)
+- **Email**: [pateljay0j@gmail.com](mailto:pateljay0j@gmail.com)
+- **Location**: Ahmedabad, Gujarat, India
+
+---
+
+## License
+
+This project is licensed under the [MIT License](LICENSE) — feel free to use and modify it for personal and commercial projects.
